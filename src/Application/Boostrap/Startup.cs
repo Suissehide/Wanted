@@ -40,7 +40,7 @@ namespace Wanted.Boostrap
 
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapHub<ChatHub>("/hub");
+                endpoints.MapHub<MainHub>("/hub");
             });
         }
     }
