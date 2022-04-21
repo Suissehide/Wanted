@@ -28,6 +28,11 @@ namespace Wanted.Application.UserEntity
             IdleManager = new IdleManager(cursor, NotificationManager);
             Connected = true;
             ReadyForPayloads = false;
+
+            if (cursor != null)
+            {
+                cursor.Host = this;
+            }
         }
 
         public Cursor MyCursor { get; set; }

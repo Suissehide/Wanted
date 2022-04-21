@@ -99,9 +99,9 @@ namespace Wanted.Application
 
             var payloads = _payloadManager.GetGamePayloads(UserHandler.GetUsers(), UserHandler.TotalActiveUsers, _map);
 
-            foreach (string connectionID in payloads.Keys)
+            foreach (string connectionId in payloads.Keys)
             {
-                await UserHandler.GetUser(connectionID).PushToClientAsync(payloads[connectionID], _mainHub);
+                await UserHandler.GetUser(connectionId).PushToClientAsync(payloads[connectionId], _mainHub);
             }
         }
 
@@ -149,8 +149,8 @@ namespace Wanted.Application
                             CursorContract = _payloadManager.Compressor.CursorCompressionContract,
                             LeaderboardEntryContract = _payloadManager.Compressor.LeaderboardEntryCompressionContract,
                         },
-                        ShipId = UserHandler.GetUserCursor(connectionId).Id,
-                        ShipName = UserHandler.GetUserCursor(connectionId).Name
+                        CursorId = UserHandler.GetUserCursor(connectionId).Id,
+                        CursorName = UserHandler.GetUserCursor(connectionId).Name
                     };
                 }
                 catch

@@ -1,0 +1,6 @@
+{
+  "dependencies": {
+    "grunt-cli": "^1.4.3",
+    "load-grunt-tasks": "^5.1.0"
+  }
+}

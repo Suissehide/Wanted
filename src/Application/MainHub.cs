@@ -9,7 +9,7 @@ namespace Wanted.Hubs
         private readonly Game _game;
         private readonly ILogger _logger;
 
-        public MainHub(Game game, ILogger logger)
+        public MainHub(Game game, ILogger<MainHub> logger)
         {
             _game = game;
             _logger = logger;
@@ -97,23 +97,6 @@ namespace Wanted.Hubs
             {
                 _logger.LogError("sendMessage", e);
             }
-        }
-
-
-
-        public void Echo(string name, string message)
-        {
-            Clients.Client(Context.ConnectionId).SendAsync("echo", name, message + " (echo from server)");
-        }
-
-        public Task Draw(int prevX, int prevY, int currentX, int currentY, string color)
-        {
-            return Clients.Others.SendAsync("draw", prevX, prevY, currentX, currentY, color);
-        }
-
-        public async Task MoveShape(int x, int y)
-        {
-            await Clients.Others.SendAsync("shapeMoved", x, y);
         }
     }
 }

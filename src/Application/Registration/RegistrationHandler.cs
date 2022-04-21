@@ -20,8 +20,8 @@ namespace Wanted.Application.Registration
 
         public RegisteredClient Register(RegisteredClient existing)
         {
-            existing.RegistrationID = Guid.NewGuid().ToString();
-            _registrationList.TryAdd(existing.RegistrationID, existing);
+            existing.RegistrationId = Guid.NewGuid().ToString();
+            _registrationList.TryAdd(existing.RegistrationId, existing);
             return existing;
         }
     }

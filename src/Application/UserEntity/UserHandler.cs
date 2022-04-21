@@ -32,7 +32,7 @@ namespace Wanted.Application.UserEntity
             if (_userList.TryRemove(connectionId, out var u) && u.MyCursor != null)
             {
                 u.MyCursor.Dispose();
-                u.MyCursor.Host = null; // Remove linking from the ship
+                u.MyCursor.Host = null; // Remove linking from the cursor
             }
         }
 

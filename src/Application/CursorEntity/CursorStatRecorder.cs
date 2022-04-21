@@ -11,7 +11,7 @@
 
         public int Wins { get; set; }
 
-        public void ShipWin()
+        public void CursorWin()
         {
             Wins++;
         }

@@ -31,7 +31,7 @@ namespace Wanted.Application
                 {
                     User user = _userHandler.GetUser(connectionId);
 
-                    //It's possible for a controller to disconnect without a ship
+                    //It's possible for a controller to disconnect without a cursor
                     if (!user.Controller)
                     {
                         user.MyCursor.Dispose();
@@ -39,7 +39,7 @@ namespace Wanted.Application
                     }
                     else
                     {
-                        // Remove me from the ship hosts remote controllers
+                        // Remove me from the cursor hosts remote controllers
                         if (user.MyCursor != null)
                         {
                             user.MyCursor.Host.RemoteControllers.Remove(user);
