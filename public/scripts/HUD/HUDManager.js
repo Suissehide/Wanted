@@ -70,8 +70,8 @@ var Wanted;
 
             if (cursor) {
                 this._cursorStatMonitor.Update(cursor);
-                this._cursorHealthMonitor.Update(cursor);
-                this._cursorExperienceMonitor.Update(cursor);
+                // this._cursorHealthMonitor.Update(cursor);
+                // this._cursorExperienceMonitor.Update(cursor);
                 this._environmentMonitor.Update(cursor);
                 this._rankingsManager.Update(cursor);
             }

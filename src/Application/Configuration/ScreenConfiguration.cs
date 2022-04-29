@@ -1,14 +1,17 @@
-﻿namespace Wanted.Application.Configuration
+﻿using Wanted.Application.PayloadManagement;
+using Wanted.Application.UserEntity;
+
+namespace Wanted.Application.Configuration
 {
     public class ScreenConfiguration
     {
         public ScreenConfiguration()
         {
-            SCREEN_BUFFER_AREA = 200;
-            MAX_SCREEN_WIDTH = 2000;
-            MAX_SCREEN_HEIGHT = 2000;
-            MIN_SCREEN_WIDTH = 1000;
-            MIN_SCREEN_HEIGHT = 660;
+            SCREEN_BUFFER_AREA = PayloadManager.SCREEN_BUFFER_AREA;
+            MAX_SCREEN_WIDTH = User.MAX_SCREEN_WIDTH;
+            MAX_SCREEN_HEIGHT = User.MAX_SCREEN_HEIGHT;
+            MIN_SCREEN_WIDTH = User.MIN_SCREEN_WIDTH;
+            MIN_SCREEN_HEIGHT = User.MIN_SCREEN_HEIGHT;
         }
 
         public int SCREEN_BUFFER_AREA { get; set; }

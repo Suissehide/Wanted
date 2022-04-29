@@ -31,7 +31,10 @@ namespace Wanted.Boostrap
             services.AddSwaggerGen();
 
             services.AddSignalR()
-                .AddNewtonsoftJsonProtocol();
+                .AddJsonProtocol(options => {
+                    options.PayloadSerializerOptions.PropertyNamingPolicy = null;
+                });
+                //.AddNewtonsoftJsonProtocol();
                 //.withHubProtocol(new signalR.JsonHubProtocol());
 
             services.AddSingleton<Game>();

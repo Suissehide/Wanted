@@ -17,7 +17,8 @@ var Wanted;
                     var userInformation = _this._connectionManager.PrepareRegistration();
                     _this.TryInitialize(userInformation, function (initialization) {
                         initialization.UserInformation = userInformation;
-                        _this._payloadDecompressor = new Server.PayloadDecompressor(initialization.compressionContracts );
+                        console.log(initialization);
+                        _this._payloadDecompressor = new Server.PayloadDecompressor(initialization.CompressionContracts );
 
                         result.resolve(initialization);
 

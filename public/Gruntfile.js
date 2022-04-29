@@ -21,8 +21,17 @@ module.exports = function (grunt) {
             },
             concat: {
                 files: [
+                    'scripts/utilities/endGate.js',
+                    'scripts/utilities/*.js',
+                    'scripts/game.js',
+                    'scripts/gameScreen.js',
+                    'scripts/main.js',
+                    'scripts/debug/*.js',
+                    'scripts/configuration/*.js',
                     'scripts/server/*.js',
-                    'scripts/*.js'
+                    'scripts/user/*.js',
+                    'scripts/cursor/*.js',
+                    'scripts/HUD/*.js'
                 ],
                 tasks: ['concat']
             },
@@ -43,11 +52,17 @@ module.exports = function (grunt) {
             },
             dist: {
                 src: [
-                    'scripts/server/payloadDecompressor.js',
-                    'scripts/server/serverConnectionManager.js',
-                    'scripts/server/serverAdapter.js',
+                    'scripts/utilities/endGate.js',
+                    'scripts/utilities/*.js',
                     'scripts/game.js',
-                    'scripts/main.js'
+                    'scripts/gameScreen.js',
+                    'scripts/main.js',
+                    'scripts/debug/*.js',
+                    'scripts/configuration/*.js',
+                    'scripts/server/*.js',
+                    'scripts/user/*.js',
+                    'scripts/cursor/*.js',
+                    'scripts/HUD/*.js'
                 ],
                 dest: 'build/built.js'
             }

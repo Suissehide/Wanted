@@ -2,9 +2,9 @@
     (function (Server) {
         var PayloadDecompressor = (function () {
             function PayloadDecompressor(contracts) {
-                this.PayloadContract = contracts.payloadContract;
-                this.CursorContract = contracts.cursorContract;
-                this.LeaderboardEntryContract = contracts.leaderboardEntryContract;
+                this.PayloadContract = contracts.PayloadContract;
+                this.CursorContract = contracts.CursorContract;
+                this.LeaderboardEntryContract = contracts.LeaderboardEntryContract;
             }
 
             PayloadDecompressor.prototype.DecompressCursor = function (cursor) {
