@@ -10919,13 +10919,10 @@ var Wanted;
 
 (function (Wanted) {
     var Game = (function (_super) {
-        // _extends(Game, _super);
+        __extends(Game, _super);
         function Game(gameCanvas, gameScreen, serverAdapter, initializationData) {
             var _this = this;
-            // _super.call(this, gameCanvas);
-            // eg.Game.call(gameCanvas);
-            _this.prototype = new eg.Game();
-            console.log("TEST: ", this.Scene, eg.Game);
+            _super.call(this, gameCanvas);
 
             Game.GameConfiguration = new Wanted.ConfigurationManager(initializationData.Configuration);
 
@@ -10934,7 +10931,7 @@ var Wanted;
 
             // this._bufferedViewport = new eg.Bounds.BoundingRectangle(this.Scene.Camera.Position, this.Scene.Camera.Size.Add(Wanted.GameScreen.SCREEN_BUFFER_AREA));
             this._cursorManager = new Wanted.CursorManager(this._bufferedViewport, this.Scene, this.CollisionManager, this.Content);
-            this._cursorManager.Initialize(new Wanted.UserCursorManager(initializationData.CursorId, this._cursorManager, this.CollisionManager, this.Input, this.Scene.Camera, serverAdapter));
+            this._cursorManager.Initialize(new Wanted.UserCursorManager(initializationData.CursorId, this._cursorManager, this.Input, serverAdapter));
             // this._map = new Wanted.Map(this.Scene, this.CollisionManager, this.Content, this.Input.Keyboard, serverAdapter);
             this._hud = new Wanted.HUDManager(initializationData, this._cursorManager, this._map.AreaRenderer, this.Input.Keyboard, serverAdapter);
             // this._debugManager = new Wanted.Debug.DebugManager(initializationData.CursorId, this, serverAdapter);
@@ -10972,7 +10969,6 @@ var Wanted;
             // this._debugManager.Draw(context);
         };
 
-        Object.setPrototypeOf(Game, _super);
         return Game;
     })(eg.Game);
     Wanted.Game = Game;
@@ -11068,6 +11064,8 @@ $(function () {
         gameScreen = new Wanted.GameScreen(gameCanvas, popUpHolder, serverAdapter)
         ;
 
+    console.log("SERVER ADAPTER", serverAdapter);
+
     serverAdapter.Negotiate().done(function (initializationData) {
         loadContent.hide();
         gameContent.show();
@@ -11076,62 +11074,6 @@ $(function () {
         gameScreen.ForceResizeCheck();
     });
 });
-/*next file*/
-
-var Wanted;
-(function (Wanted) {
-    (function (Debug) {
-        var DebugManager = (function () {
-            function DebugManager(myCursorId, game, serverAdapter) {
-                this._debugMode = this.GetUrlVars()[DebugManager.DEBUG_FLAG] === "true";
-
-                if (this._debugMode) {
-                    this._gameInformer = new Debug.GameInformer(game.Scene);
-                    this._updateRate = new Debug.UpdateRate(this._gameInformer, game);
-                    this._drawRate = new Debug.DrawRate(this._gameInformer);
-                    this._payloadRate = new Debug.PayloadRate(this._gameInformer);
-                    this._connectionMonitor = new Debug.ConnectionMonitor(this._gameInformer, serverAdapter);
-                }
-            }
-            DebugManager.prototype.LoadPayload = function (payload) {
-                if (this._debugMode) {
-                    this._payloadRate.LoadPayload(payload);
-                }
-            };
-
-            DebugManager.prototype.Update = function (gameTime) {
-                if (this._debugMode) {
-                    this._updateRate.Update(gameTime);
-                    this._drawRate.Update(gameTime);
-                    this._payloadRate.Update(gameTime);
-                    this._gameInformer.Update(gameTime);
-                }
-            };
-
-            DebugManager.prototype.Draw = function (context) {
-                if (this._debugMode) {
-                    this._drawRate.Draw(context);
-                }
-            };
-
-            DebugManager.prototype.GetUrlVars = function () {
-                var vars = [], hash, hashes = window.location.href.slice(window.location.href.indexOf('?') + 1).split('&');
-
-                for (var i = 0; i < hashes.length; i++) {
-                    hash = hashes[i].split('=');
-                    vars.push(hash[0]);
-                    vars[hash[0]] = hash[1];
-                }
-
-                return vars;
-            };
-            DebugManager.DEBUG_FLAG = "debug";
-            return DebugManager;
-        })();
-        Debug.DebugManager = DebugManager;
-    })(Wanted.Debug || (Wanted.Debug = {}));
-    var Debug = Wanted.Debug;
-})(Wanted || (Wanted = {}));
 /*next file*/
 
 var Wanted;
@@ -11260,11 +11202,28 @@ var Wanted;
             function ServerAdapter(Connection, authCookieName) {
                 var _this = this;
                 this.Connection = Connection;
+                this.Proxy = Proxy;
+                var savedProxyInvoke = this.Proxy.invoke;
+
+                this.OnPayload = new eg.EventHandler1();
+                this.OnLeaderboardUpdate = new eg.EventHandler1();
+                this.OnForcedDisconnct = new eg.EventHandler();
+                this.OnControlTransferred = new eg.EventHandler();
+                this.OnPingRequest = new eg.EventHandler();
+                this.OnMapResize = new eg.EventHandler1();
+                this.OnMessageReceived = new eg.EventHandler1();
+
                 this._connectionManager = new Server.ServerConnectionManager(authCookieName);
+
+                (this.Proxy.invoke) = function () {
+                    if ((_this.Connection).state === $.signalR.connectionState.connected) {
+                        return savedProxyInvoke.apply(_this.Proxy, arguments);
+                    }
+                };
             }
             ServerAdapter.prototype.Negotiate = function () {
                 var _this = this;
-                var result = $.Deferred();
+                var userInformation = this._connectionManager.PrepareRegistration(), result = $.Deferred();
                 this.Wire();
 
                 this.Connection.start().then(function () {
@@ -11384,15 +11343,12 @@ var eg = EndGate;
 var Wanted;
 (function (Wanted) {
     var UserCursorManager = (function () {
-        function UserCursorManager(ControlledCursorId, _cursorManager, /*_collisionManager,*/ input, /*_camera,*/ serverAdapter) {
+        function UserCursorManager(ControlledCursorId, _cursorManager, input, serverAdapter) {
             var _this = this;
             this.ControlledCursorId = ControlledCursorId;
             this._cursorManager = _cursorManager;
-            // this._collisionManager = _collisionManager;
-            // this._camera = _camera;
             this._connection = serverAdapter.Connection;
-            //this._proxy = serverAdapter.Proxy;
-            // this._userCameraController = new Wanted.UserCameraController(this.ControlledCursorId, this._cursorManager, this._camera);
+            this._proxy = serverAdapter.Proxy;
             this._lastSync = new Date();
             this.LatencyResolver = new Wanted.LatencyResolver(serverAdapter);
 

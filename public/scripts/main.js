@@ -15,6 +15,8 @@ $(function () {
         gameScreen = new Wanted.GameScreen(gameCanvas, popUpHolder, serverAdapter)
         ;
 
+    console.log("SERVER ADAPTER", serverAdapter);
+
     serverAdapter.Negotiate().done(function (initializationData) {
         loadContent.hide();
         gameContent.show();

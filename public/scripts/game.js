@@ -10,13 +10,10 @@ var Wanted;
 
 (function (Wanted) {
     var Game = (function (_super) {
-        // _extends(Game, _super);
+        __extends(Game, _super);
         function Game(gameCanvas, gameScreen, serverAdapter, initializationData) {
             var _this = this;
-            // _super.call(this, gameCanvas);
-            // eg.Game.call(gameCanvas);
-            _this.prototype = new eg.Game();
-            console.log("TEST: ", this.Scene, eg.Game);
+            _super.call(this, gameCanvas);
 
             Game.GameConfiguration = new Wanted.ConfigurationManager(initializationData.Configuration);
 
@@ -25,7 +22,7 @@ var Wanted;
 
             // this._bufferedViewport = new eg.Bounds.BoundingRectangle(this.Scene.Camera.Position, this.Scene.Camera.Size.Add(Wanted.GameScreen.SCREEN_BUFFER_AREA));
             this._cursorManager = new Wanted.CursorManager(this._bufferedViewport, this.Scene, this.CollisionManager, this.Content);
-            this._cursorManager.Initialize(new Wanted.UserCursorManager(initializationData.CursorId, this._cursorManager, this.CollisionManager, this.Input, this.Scene.Camera, serverAdapter));
+            this._cursorManager.Initialize(new Wanted.UserCursorManager(initializationData.CursorId, this._cursorManager, this.Input, serverAdapter));
             // this._map = new Wanted.Map(this.Scene, this.CollisionManager, this.Content, this.Input.Keyboard, serverAdapter);
             this._hud = new Wanted.HUDManager(initializationData, this._cursorManager, this._map.AreaRenderer, this.Input.Keyboard, serverAdapter);
             // this._debugManager = new Wanted.Debug.DebugManager(initializationData.CursorId, this, serverAdapter);
@@ -63,7 +60,6 @@ var Wanted;
             // this._debugManager.Draw(context);
         };
 
-        Object.setPrototypeOf(Game, _super);
         return Game;
     })(eg.Game);
     Wanted.Game = Game;

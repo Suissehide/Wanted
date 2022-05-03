@@ -2,15 +2,12 @@ var eg = EndGate;
 var Wanted;
 (function (Wanted) {
     var UserCursorManager = (function () {
-        function UserCursorManager(ControlledCursorId, _cursorManager, /*_collisionManager,*/ input, /*_camera,*/ serverAdapter) {
+        function UserCursorManager(ControlledCursorId, _cursorManager, input, serverAdapter) {
             var _this = this;
             this.ControlledCursorId = ControlledCursorId;
             this._cursorManager = _cursorManager;
-            // this._collisionManager = _collisionManager;
-            // this._camera = _camera;
             this._connection = serverAdapter.Connection;
-            //this._proxy = serverAdapter.Proxy;
-            // this._userCameraController = new Wanted.UserCameraController(this.ControlledCursorId, this._cursorManager, this._camera);
+            this._proxy = serverAdapter.Proxy;
             this._lastSync = new Date();
             this.LatencyResolver = new Wanted.LatencyResolver(serverAdapter);
 

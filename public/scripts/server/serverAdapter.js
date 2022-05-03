@@ -6,11 +6,28 @@ var Wanted;
             function ServerAdapter(Connection, authCookieName) {
                 var _this = this;
                 this.Connection = Connection;
+                this.Proxy = Proxy;
+                var savedProxyInvoke = this.Proxy.invoke;
+
+                this.OnPayload = new eg.EventHandler1();
+                this.OnLeaderboardUpdate = new eg.EventHandler1();
+                this.OnForcedDisconnct = new eg.EventHandler();
+                this.OnControlTransferred = new eg.EventHandler();
+                this.OnPingRequest = new eg.EventHandler();
+                this.OnMapResize = new eg.EventHandler1();
+                this.OnMessageReceived = new eg.EventHandler1();
+
                 this._connectionManager = new Server.ServerConnectionManager(authCookieName);
+
+                (this.Proxy.invoke) = function () {
+                    if ((_this.Connection).state === $.signalR.connectionState.connected) {
+                        return savedProxyInvoke.apply(_this.Proxy, arguments);
+                    }
+                };
             }
             ServerAdapter.prototype.Negotiate = function () {
                 var _this = this;
-                var result = $.Deferred();
+                var userInformation = this._connectionManager.PrepareRegistration(), result = $.Deferred();
                 this.Wire();
 
                 this.Connection.start().then(function () {
