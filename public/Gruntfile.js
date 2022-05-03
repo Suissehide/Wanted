@@ -15,9 +15,12 @@ module.exports = function (grunt) {
         },
 
         watch: {
-            sass: {
-                files: 'styles/*.scss',
-                tasks: ['css']
+            css: {
+                files: '**/*.sass',
+                tasks: ['sass'],
+                options: {
+                    livereload: true,
+                },
             },
             concat: {
                 files: [
@@ -64,32 +67,30 @@ module.exports = function (grunt) {
                     'scripts/cursor/*.js',
                     'scripts/HUD/*.js'
                 ],
-                dest: 'build/built.js'
+                dest: 'build/scripts/bundles/game.js'
             }
         },
 
         uglify: {
             build: {
                 files: {
-                    'build/built.min.js': ['build/built.js']
+                    'build/scripts/bundles/game.min.js': ['build/scripts/bundles/game.js']
                 }
             }
         },
 
         cssmin: {
             build: {
-                src: 'styles/main.css',
-                dest: 'styles/main.min.css'
+                src: 'build/styles/bundles/main.css',
+                dest: 'build/styles/bundles/main.min.css'
             }
         },
 
         sass: {
             dev: {
-                files: {
-                    // destination     // source file
-                    'styles/main.css': 'styles/main.scss'
-                }
-            }
+                src: ['styles/*.sass'],
+                dest: 'build/styles/bundles/main.css',
+            },
         }
     });
 

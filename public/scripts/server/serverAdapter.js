@@ -27,7 +27,7 @@ var Wanted;
             }
             ServerAdapter.prototype.Negotiate = function () {
                 var _this = this;
-                var userInformation = this._connectionManager.PrepareRegistration(), result = $.Deferred();
+                var result = $.Deferred();
                 this.Wire();
 
                 this.Connection.start().then(function () {

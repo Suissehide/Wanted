@@ -11078,6 +11078,62 @@ $(function () {
 
 var Wanted;
 (function (Wanted) {
+    (function (Debug) {
+        var DebugManager = (function () {
+            function DebugManager(myCursorId, game, serverAdapter) {
+                this._debugMode = this.GetUrlVars()[DebugManager.DEBUG_FLAG] === "true";
+
+                if (this._debugMode) {
+                    this._gameInformer = new Debug.GameInformer(game.Scene);
+                    this._updateRate = new Debug.UpdateRate(this._gameInformer, game);
+                    this._drawRate = new Debug.DrawRate(this._gameInformer);
+                    this._payloadRate = new Debug.PayloadRate(this._gameInformer);
+                    this._connectionMonitor = new Debug.ConnectionMonitor(this._gameInformer, serverAdapter);
+                }
+            }
+            DebugManager.prototype.LoadPayload = function (payload) {
+                if (this._debugMode) {
+                    this._payloadRate.LoadPayload(payload);
+                }
+            };
+
+            DebugManager.prototype.Update = function (gameTime) {
+                if (this._debugMode) {
+                    this._updateRate.Update(gameTime);
+                    this._drawRate.Update(gameTime);
+                    this._payloadRate.Update(gameTime);
+                    this._gameInformer.Update(gameTime);
+                }
+            };
+
+            DebugManager.prototype.Draw = function (context) {
+                if (this._debugMode) {
+                    this._drawRate.Draw(context);
+                }
+            };
+
+            DebugManager.prototype.GetUrlVars = function () {
+                var vars = [], hash, hashes = window.location.href.slice(window.location.href.indexOf('?') + 1).split('&');
+
+                for (var i = 0; i < hashes.length; i++) {
+                    hash = hashes[i].split('=');
+                    vars.push(hash[0]);
+                    vars[hash[0]] = hash[1];
+                }
+
+                return vars;
+            };
+            DebugManager.DEBUG_FLAG = "debug";
+            return DebugManager;
+        })();
+        Debug.DebugManager = DebugManager;
+    })(Wanted.Debug || (Wanted.Debug = {}));
+    var Debug = Wanted.Debug;
+})(Wanted || (Wanted = {}));
+/*next file*/
+
+var Wanted;
+(function (Wanted) {
     var ConfigurationManager = (function () {
         function ConfigurationManager(configuration) {
             console.log(configuration);
@@ -11223,7 +11279,7 @@ var Wanted;
             }
             ServerAdapter.prototype.Negotiate = function () {
                 var _this = this;
-                var userInformation = this._connectionManager.PrepareRegistration(), result = $.Deferred();
+                var result = $.Deferred();
                 this.Wire();
 
                 this.Connection.start().then(function () {

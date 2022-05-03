@@ -4,62 +4,40 @@
 <head>
     <meta charset="utf-8" />
     <title>ASP.NET Core SignalR with TypeScript and Webpack</title>
+
+    <link href="./build/styles/bundles/main.css" rel="stylesheet" />
 </head>
 
 <body>
     <div class="container">
-        <!--
-        <div id="loadContent" style="position: absolute; width: 100%;">
-            <img style="position: relative; margin: 120px auto 0; display: block;" alt="Loading..." src="/Images/Loading.png"></img>
-            <div class="progress progress-striped active" style="position: relative; margin: 15px auto 0; width: 280px;">
-                <div class="progress-bar" style="width: 100%;height:100%;"></div>
+
+        <!-- LOAD CONTENT -->
+        <div class="load-content" id="loadContent">
+            <img class="load-image" alt="Loading..." src="./assets/Flat Assets/Templates/Bust/peep-69.png"></img>
+            <div class="gooey">
+                <span class="dot"></span>
+                <div class="dots">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
             </div>
         </div>
-        -->
-        <div id="gameContent" style="display:block;">
+
+        <!-- GAME CONTENT -->
+        <div id="gameContent" style="display: none;">
             <ul id="chat"></ul>
             <canvas id="game"></canvas>
             <div id="gameHUD">
                 <div id="cursorInWorld">2</div>
             </div>
         </div>
-
-        <div class="row">&nbsp;</div>
-        <div class="row">
-            <div class="col-2">User</div>
-            <div class="col-4">
-                <input type="text" id="userInput" />
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-2">Message</div>
-            <div class="col-4">
-                <input type="text" id="messageInput" />
-            </div>
-        </div>
-        <div class="row">&nbsp;</div>
-        <div class="row">
-            <div class="col-6">
-                <input type="button" id="sendButton" value="Send Message" />
-            </div>
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-12">
-            <hr />
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-6">
-            <ul id="messagesList"></ul>
-        </div>
-    </div>
 </body>
 
-<script src="./scripts/vendor/jquery-3.6.0.min.js"></script>
-<script src="./scripts/vendor/jquery.cookie.js"></script>
-<script src="./scripts/vendor/signalr.js"></script>
+<script src="./build/scripts/vendor/jquery-3.6.0.min.js"></script>
+<script src="./build/scripts/vendor/jquery.cookie.js"></script>
+<script src="./build/scripts/vendor/signalr.js"></script>
 
-<script src="./build/built.js"></script>
+<!-- <script src="./build/scripts/bundles/game.js"></script> -->
 
 </html>

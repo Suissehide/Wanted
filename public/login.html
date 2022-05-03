@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<link href="./build/styles/bundles/main.css" rel="stylesheet" />
+
+<div class="container">
+    <div class="row">
+        <div class="span6">
+            <h1>Wanted</h1>
+            <p>Powered by <a href="http://signalr.net/" target="_blank">SignalR</a> and <a href="http://endgate.net"
+                    target="_blank">EndGate</a>.</p>
+        </div>
+    </div>
+
+    <div class="row" style="width: 625px;">
+        <div id="loginHolder" class="well" style="height: 158px;">
+            <div class="span3">
+                <p>
+                    <a class="btn btn-success btn-large" href="#" id="GuestLogin">Login as Guest</a>
+                </p>
+                <p>
+                    <a class="btn btn-default btn-large" href="https://github.com/Suissehide/Wanted"
+                        target="_blank">Wanted Source</a>
+                </p>
+                <p>
+                    <a class="btn btn-default btn-large" href="https://github.com/signalr/signalr"
+                        target="_blank">SignalR Source</a>
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <script src="./scripts/vendor/jquery-3.6.0.min.js"></script>
+    <script src="./scripts/vendor/jquery.cookie.js"></script>
+
+    <script type="text/javascript">
+        $("#GuestLogin").click(function () {
+            var stateCookie = {
+                DisplayName: "",
+                Identity: "Guest",
+                RegistrationID: ""
+            };
+            $.cookie('wanted.state', JSON.stringify(stateCookie), { path: '/', expires: 30 });
+            window.location.assign("/");
+        });
+    </script>
+</div>
+
+</html>
