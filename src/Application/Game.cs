@@ -31,16 +31,16 @@ namespace Wanted.Application
             RegistrationHandler = new RegistrationHandler();
             Configuration = new GameConfigurationManager();
 
-            _gameLoop = new HighFrequencyTimer(1000 / Configuration.gameConfig.UPDATE_INTERVAL, async id => await Update(id), () => { }, () => { }, (fps) =>
+            _gameLoop = new HighFrequencyTimer(1000 / Configuration.GameConfig.UPDATE_INTERVAL, async id => await Update(id), () => { }, () => { }, (fps) =>
             {
                 _actualFPS = fps;
             });
             _mainHub = mainHub;
 
 
-            _leaderboardLoop = new Timer(UpdateLeaderboard, null, Configuration.gameConfig.LEADERBOARD_PUSH_INTERVAL, Configuration.gameConfig.LEADERBOARD_PUSH_INTERVAL);
+            _leaderboardLoop = new Timer(UpdateLeaderboard, null, Configuration.GameConfig.LEADERBOARD_PUSH_INTERVAL, Configuration.GameConfig.LEADERBOARD_PUSH_INTERVAL);
 
-            DRAW_AFTER = Configuration.gameConfig.DRAW_INTERVAL / Configuration.gameConfig.UPDATE_INTERVAL;
+            DRAW_AFTER = Configuration.GameConfig.DRAW_INTERVAL / Configuration.GameConfig.UPDATE_INTERVAL;
             _gameTime = new GameTime();
             _map = new Map(this, mainHub);
             _payloadManager = new PayloadManager();

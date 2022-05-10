@@ -24,7 +24,7 @@ var Wanted;
             this._cursorManager = new Wanted.CursorManager(this._bufferedViewport, this.Scene, this.CollisionManager, this.Content);
             this._cursorManager.Initialize(new Wanted.UserCursorManager(initializationData.CursorId, this._cursorManager, this.Input, serverAdapter));
             // this._map = new Wanted.Map(this.Scene, this.CollisionManager, this.Content, this.Input.Keyboard, serverAdapter);
-            this._hud = new Wanted.HUDManager(initializationData, this._cursorManager, this._map.AreaRenderer, this.Input.Keyboard, serverAdapter);
+            this._hud = new Wanted.HUDManager(initializationData, this._cursorManager, this.Input.Keyboard, serverAdapter);
             // this._debugManager = new Wanted.Debug.DebugManager(initializationData.CursorId, this, serverAdapter);
 
             serverAdapter.OnPayload.Bind(function (payload) {

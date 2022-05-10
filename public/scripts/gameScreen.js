@@ -53,7 +53,7 @@ var Wanted;
         };
 
         GameScreen.prototype.UpdateViewport = function () {
-            // return new eg.Size2d(Math.max(Math.min($(window).width(), GameScreen.MAX_SCREEN_WIDTH), GameScreen.MIN_SCREEN_WIDTH), Math.max(Math.min($(window).height() - this._gameHUDHeight, GameScreen.MAX_SCREEN_HEIGHT), GameScreen.MIN_SCREEN_HEIGHT));
+            return new eg.Size2d(Math.max(Math.min($(window).width(), GameScreen.MAX_SCREEN_WIDTH), GameScreen.MIN_SCREEN_WIDTH), Math.max(Math.min($(window).height() - this._gameHUDHeight, GameScreen.MAX_SCREEN_HEIGHT), GameScreen.MIN_SCREEN_HEIGHT));
         };
 
         GameScreen.prototype.SendNewViewportToServer = function () {

@@ -10933,7 +10933,7 @@ var Wanted;
             this._cursorManager = new Wanted.CursorManager(this._bufferedViewport, this.Scene, this.CollisionManager, this.Content);
             this._cursorManager.Initialize(new Wanted.UserCursorManager(initializationData.CursorId, this._cursorManager, this.Input, serverAdapter));
             // this._map = new Wanted.Map(this.Scene, this.CollisionManager, this.Content, this.Input.Keyboard, serverAdapter);
-            this._hud = new Wanted.HUDManager(initializationData, this._cursorManager, this._map.AreaRenderer, this.Input.Keyboard, serverAdapter);
+            this._hud = new Wanted.HUDManager(initializationData, this._cursorManager, this.Input.Keyboard, serverAdapter);
             // this._debugManager = new Wanted.Debug.DebugManager(initializationData.CursorId, this, serverAdapter);
 
             serverAdapter.OnPayload.Bind(function (payload) {
@@ -11030,7 +11030,7 @@ var Wanted;
         };
 
         GameScreen.prototype.UpdateViewport = function () {
-            // return new eg.Size2d(Math.max(Math.min($(window).width(), GameScreen.MAX_SCREEN_WIDTH), GameScreen.MIN_SCREEN_WIDTH), Math.max(Math.min($(window).height() - this._gameHUDHeight, GameScreen.MAX_SCREEN_HEIGHT), GameScreen.MIN_SCREEN_HEIGHT));
+            return new eg.Size2d(Math.max(Math.min($(window).width(), GameScreen.MAX_SCREEN_WIDTH), GameScreen.MIN_SCREEN_WIDTH), Math.max(Math.min($(window).height() - this._gameHUDHeight, GameScreen.MAX_SCREEN_HEIGHT), GameScreen.MIN_SCREEN_HEIGHT));
         };
 
         GameScreen.prototype.SendNewViewportToServer = function () {
@@ -11157,24 +11157,24 @@ var Wanted;
             // Wanted.Map.SIZE = new eg.Size2d(configuration.mapConfig.WIDTH, configuration.mapConfig.HEIGHT);
             // Wanted.Map.BARRIER_DEPRECATION = configuration.mapConfig.BARRIER_DEPRECATION;
 
-            Wanted.GameScreen.MAX_SCREEN_HEIGHT = configuration.screenConfig.MAX_SCREEN_HEIGHT;
-            Wanted.GameScreen.MAX_SCREEN_WIDTH = configuration.screenConfig.MAX_SCREEN_WIDTH;
-            Wanted.GameScreen.MIN_SCREEN_HEIGHT = configuration.screenConfig.MIN_SCREEN_HEIGHT;
-            Wanted.GameScreen.MIN_SCREEN_WIDTH = configuration.screenConfig.MIN_SCREEN_WIDTH;
-            Wanted.GameScreen.SCREEN_BUFFER_AREA = configuration.screenConfig.SCREEN_BUFFER_AREA;
+            Wanted.GameScreen.MAX_SCREEN_HEIGHT = configuration.ScreenConfig.MAX_SCREEN_HEIGHT;
+            Wanted.GameScreen.MAX_SCREEN_WIDTH = configuration.ScreenConfig.MAX_SCREEN_WIDTH;
+            Wanted.GameScreen.MIN_SCREEN_HEIGHT = configuration.ScreenConfig.MIN_SCREEN_HEIGHT;
+            Wanted.GameScreen.MIN_SCREEN_WIDTH = configuration.ScreenConfig.MIN_SCREEN_WIDTH;
+            Wanted.GameScreen.SCREEN_BUFFER_AREA = configuration.ScreenConfig.SCREEN_BUFFER_AREA;
 
-            // Wanted.Bullet.BULLET_DIE_AFTER = eg.TimeSpan.FromMilliseconds(configuration.gameConfig.BULLET_DIE_AFTER);
+            // Wanted.Bullet.BULLET_DIE_AFTER = eg.TimeSpan.FromMilliseconds(configuration.GameConfig.BULLET_DIE_AFTER);
             // Wanted.Bullet.SIZE = new eg.Size2d(configuration.bulletConfig.WIDTH, configuration.bulletConfig.HEIGHT);
 
             // Wanted.HealthPack.SIZE = new eg.Size2d(configuration.healthPackConfig.WIDTH, configuration.healthPackConfig.HEIGHT);
             // Wanted.HealthPack.LIFE_SPAN = eg.TimeSpan.FromMilliseconds(configuration.healthPackConfig.LIFE_SPAN);
 
-            Wanted.LeaderboardManager.LEADERBOARD_SIZE = configuration.leaderboardConfig.LEADERBOARD_SIZE;
+            Wanted.LeaderboardManager.LEADERBOARD_SIZE = configuration.LeaderboardConfig.LEADERBOARD_SIZE;
 
-            // Wanted.DeathScreen.RESPAWN_TIMER = eg.TimeSpan.FromSeconds(configuration.gameConfig.RESPAWN_TIMER);
+            // Wanted.DeathScreen.RESPAWN_TIMER = eg.TimeSpan.FromSeconds(configuration.GameConfig.RESPAWN_TIMER);
 
             $.extend(this, configuration);
-            Wanted.LatencyResolver.REQUEST_PING_EVERY = configuration.gameConfig.REQUEST_PING_EVERY;
+            Wanted.LatencyResolver.REQUEST_PING_EVERY = configuration.GameConfig.REQUEST_PING_EVERY;
         }
         return ConfigurationManager;
     })();
@@ -11186,6 +11186,7 @@ var Wanted;
     (function (Server) {
         var PayloadDecompressor = (function () {
             function PayloadDecompressor(contracts) {
+                console.log("CONTRACTS: ", contracts.PayloadContract);
                 this.PayloadContract = contracts.PayloadContract;
                 this.CursorContract = contracts.CursorContract;
                 this.LeaderboardEntryContract = contracts.LeaderboardEntryContract;
@@ -11211,16 +11212,6 @@ var Wanted;
                 };
             };
 
-            PayloadDecompressor.prototype.DecompressPayload = function (data) {
-                return {
-                    Cursors: data[this.PayloadContract.cursors],
-                    LeaderboardPosition: data[this.PayloadContract.leaderboardPosition],
-                    CursorsInWorld: data[this.PayloadContract.cursorsInWorld],
-                    Notification: data[this.PayloadContract.notification],
-                    LastCommandProcessed: data[this.PayloadContract.lastCommandProcessed]
-                };
-            };
-
             PayloadDecompressor.prototype.DecompressLeaderboard = function (data) {
                 var payload = [];
 
@@ -11234,12 +11225,24 @@ var Wanted;
                 return payload;
             };
 
+            PayloadDecompressor.prototype.DecompressPayload = function (data) {
+                console.log(data, this.PayloadContract);
+                return {
+                    Cursors: data[this.PayloadContract.cursors],
+                    LeaderboardPosition: data[this.PayloadContract.leaderboardPosition],
+                    CursorsInWorld: data[this.PayloadContract.cursorsInWorld],
+                    Notification: data[this.PayloadContract.notification],
+                    LastCommandProcessed: data[this.PayloadContract.lastCommandProcessed]
+                };
+            };
+
             PayloadDecompressor.prototype.Decompress = function (data) {
                 var payload = this.DecompressPayload(data), i = 0;
 
                 for (i = 0; i < payload.Cursors.length; i++) {
                     payload.Cursors[i] = this.DecompressCursor(payload.Cursors[i]);
                 }
+                console.log(payload);
                 return payload;
             };
             return PayloadDecompressor;
@@ -11287,7 +11290,7 @@ var Wanted;
                     _this.TryInitialize(userInformation, function (initialization) {
                         initialization.UserInformation = userInformation;
                         console.log(initialization);
-                        _this._payloadDecompressor = new Server.PayloadDecompressor(initialization.CompressionContracts );
+                        _this._payloadDecompressor = new Server.PayloadDecompressor(initialization.CompressionContracts);
 
                         result.resolve(initialization);
 
@@ -11324,6 +11327,7 @@ var Wanted;
             ServerAdapter.prototype.Wire = function () {
                 var _this = this;
                 this.Connection.on("d", function (payload) {
+                    console.log("Payload", payload);
                     _this._payloadDecompressor.Decompress(payload);
                 });
 
@@ -11503,6 +11507,53 @@ var Wanted;
 
 var Wanted;
 (function (Wanted) {
+    var CursorClickController = (function () {
+        function CursorClickController(keyboard, onClick) {
+            var autoClickHandle, ClickdAt = 0, singleClickMode = true, lastShot = 0;
+
+            keyboard.OnCommandDown("space", function () {
+                var timeSinceClickd;
+
+                ClickdAt = new Date().getTime();
+
+                if (singleClickMode) {
+                    timeSinceClickd = ClickdAt - lastShot;
+
+                    if (timeSinceClickd > CursorClickController.MIN_Click_RATE.Milliseconds) {
+                        lastShot = ClickdAt;
+                        onClick("Click");
+                    }
+
+                    autoClickHandle = setTimeout(function () {
+                        singleClickMode = false;
+                        onClick("StartClick");
+                    }, CursorClickController.MIN_Click_RATE.Milliseconds);
+                } else {
+                    onClick("StartClick");
+                }
+            });
+            keyboard.OnCommandUp("space", function () {
+                var timeClickReleased;
+
+                clearTimeout(autoClickHandle);
+                timeClickReleased = new Date().getTime();
+
+                if (!singleClickMode) {
+                    lastShot = timeClickReleased;
+                    onClick("StopClick");
+                }
+
+                singleClickMode = timeClickReleased - ClickdAt < CursorClickController.MIN_Click_RATE.Milliseconds;
+            });
+        }
+        return CursorClickController;
+    })();
+    Wanted.CursorClickController = CursorClickController;
+})(Wanted || (Wanted = {}));
+/*next file*/
+
+var Wanted;
+(function (Wanted) {
     var CursorInputController = (function () {
         function CursorInputController(_keyboard, _onMove, _onClick) {
             var _this = this;
@@ -11510,8 +11561,8 @@ var Wanted;
             this._onMove = _onMove;
             this._onClick = _onClick;
 
-            this.BindKeys(["space"], "OnCommandDown", "Action", true);
-            this.BindKeys(["space"], "OnCommandUp", "Action", false);
+            this.BindKeys(["space"], "OnCommandDown", "Action1", true);
+            this.BindKeys(["space"], "OnCommandUp", "Action1", false);
 
             // this._keyboard.OnCommandUp("space", function () {
             //     var now = new Date();
@@ -11652,7 +11703,7 @@ var Wanted;
 var Wanted;
 (function (Wanted) {
     var HUDManager = (function () {
-        function HUDManager(initialization, _cursorManager, areaRenderer, keyboard, serverAdapter) {
+        function HUDManager(initialization, _cursorManager, keyboard, serverAdapter) {
             this._cursorManager = _cursorManager;
             this._gameHUD = $("#gameHUD");
             this._doublePopupHolder = $("#doublePopupHolder");

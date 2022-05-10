@@ -7,8 +7,8 @@ var Wanted;
             this._onMove = _onMove;
             this._onClick = _onClick;
 
-            this.BindKeys(["space"], "OnCommandDown", "Action", true);
-            this.BindKeys(["space"], "OnCommandUp", "Action", false);
+            this.BindKeys(["space"], "OnCommandDown", "Action1", true);
+            this.BindKeys(["space"], "OnCommandUp", "Action1", false);
 
             // this._keyboard.OnCommandUp("space", function () {
             //     var now = new Date();

@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.WebUtilities;
 using Newtonsoft.Json;
 using System.Text;
+using System.Text.Json;
 using System.Web;
 using Wanted.Application;
 using Wanted.Application.Registration;
@@ -31,11 +32,11 @@ namespace Wanted.Boostrap
             services.AddSwaggerGen();
 
             services.AddSignalR()
-                .AddJsonProtocol(options => {
-                    options.PayloadSerializerOptions.PropertyNamingPolicy = null;
+                .AddJsonProtocol(o =>
+                {
+                    o.PayloadSerializerOptions.PropertyNamingPolicy = null;
+                    //o.PayloadSerializerOptions.ContractResolver = new Newtonsoft.Json.Serialization.DefaultContractResolver();
                 });
-                //.AddNewtonsoftJsonProtocol();
-                //.withHubProtocol(new signalR.JsonHubProtocol());
 
             services.AddSingleton<Game>();
             services.AddAuthentication().AddCookie();

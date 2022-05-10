@@ -4,22 +4,22 @@
     {
         public GameConfigurationManager()
         {
-            gameConfig = new GameConfiguration();
-            screenConfig = new ScreenConfiguration();
-            leaderboardConfig = new LeaderboardConfiguration();
-            runtimeConfig = new RuntimeConfiguration();
+            GameConfig = new GameConfiguration();
+            ScreenConfig = new ScreenConfiguration();
+            LeaderboardConfig = new LeaderboardConfiguration();
+            RuntimeConfig = new RuntimeConfiguration();
         }
 
         // Game Configurations
-        public GameConfiguration gameConfig { get; set; }
+        public GameConfiguration GameConfig { get; set; }
 
         // Screen Configurations
-        public ScreenConfiguration screenConfig { get; set; }
+        public ScreenConfiguration ScreenConfig { get; set; }
 
         // Leaderboard Configurations
-        public LeaderboardConfiguration leaderboardConfig { get; set; }
+        public LeaderboardConfiguration LeaderboardConfig { get; set; }
 
         // Runtime Configurations
-        public RuntimeConfiguration runtimeConfig { get; set; }
+        public RuntimeConfiguration RuntimeConfig { get; set; }
     }
 }

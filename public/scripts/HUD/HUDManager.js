@@ -1,7 +1,7 @@
 var Wanted;
 (function (Wanted) {
     var HUDManager = (function () {
-        function HUDManager(initialization, _cursorManager, areaRenderer, keyboard, serverAdapter) {
+        function HUDManager(initialization, _cursorManager, keyboard, serverAdapter) {
             this._cursorManager = _cursorManager;
             this._gameHUD = $("#gameHUD");
             this._doublePopupHolder = $("#doublePopupHolder");

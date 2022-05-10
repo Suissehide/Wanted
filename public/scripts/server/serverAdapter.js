@@ -35,7 +35,7 @@ var Wanted;
                     _this.TryInitialize(userInformation, function (initialization) {
                         initialization.UserInformation = userInformation;
                         console.log(initialization);
-                        _this._payloadDecompressor = new Server.PayloadDecompressor(initialization.CompressionContracts );
+                        _this._payloadDecompressor = new Server.PayloadDecompressor(initialization.CompressionContracts);
 
                         result.resolve(initialization);
 
@@ -72,6 +72,7 @@ var Wanted;
             ServerAdapter.prototype.Wire = function () {
                 var _this = this;
                 this.Connection.on("d", function (payload) {
+                    console.log("Payload", payload);
                     _this._payloadDecompressor.Decompress(payload);
                 });
 

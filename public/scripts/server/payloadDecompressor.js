@@ -2,6 +2,7 @@
     (function (Server) {
         var PayloadDecompressor = (function () {
             function PayloadDecompressor(contracts) {
+                console.log("CONTRACTS: ", contracts.PayloadContract);
                 this.PayloadContract = contracts.PayloadContract;
                 this.CursorContract = contracts.CursorContract;
                 this.LeaderboardEntryContract = contracts.LeaderboardEntryContract;
@@ -27,16 +28,6 @@
                 };
             };
 
-            PayloadDecompressor.prototype.DecompressPayload = function (data) {
-                return {
-                    Cursors: data[this.PayloadContract.cursors],
-                    LeaderboardPosition: data[this.PayloadContract.leaderboardPosition],
-                    CursorsInWorld: data[this.PayloadContract.cursorsInWorld],
-                    Notification: data[this.PayloadContract.notification],
-                    LastCommandProcessed: data[this.PayloadContract.lastCommandProcessed]
-                };
-            };
-
             PayloadDecompressor.prototype.DecompressLeaderboard = function (data) {
                 var payload = [];
 
@@ -50,12 +41,24 @@
                 return payload;
             };
 
+            PayloadDecompressor.prototype.DecompressPayload = function (data) {
+                console.log(data, this.PayloadContract);
+                return {
+                    Cursors: data[this.PayloadContract.cursors],
+                    LeaderboardPosition: data[this.PayloadContract.leaderboardPosition],
+                    CursorsInWorld: data[this.PayloadContract.cursorsInWorld],
+                    Notification: data[this.PayloadContract.notification],
+                    LastCommandProcessed: data[this.PayloadContract.lastCommandProcessed]
+                };
+            };
+
             PayloadDecompressor.prototype.Decompress = function (data) {
                 var payload = this.DecompressPayload(data), i = 0;
 
                 for (i = 0; i < payload.Cursors.length; i++) {
                     payload.Cursors[i] = this.DecompressCursor(payload.Cursors[i]);
                 }
+                console.log(payload);
                 return payload;
             };
             return PayloadDecompressor;
