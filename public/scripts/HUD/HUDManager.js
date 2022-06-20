@@ -9,17 +9,17 @@ var Wanted;
             this._cursorStats = $("#StatisticHolder");
             this._logout = $("#logout");
             this._myCursorId = initialization.CursorId;
-            // this._gameHUDHeight = this._gameHUD.height();
+            this._gameHUDHeight = this._gameHUD.height();
             // this._cursorStatMonitor = new Wanted.CursorStatMonitor();
             // this._cursorHealthMonitor = new Wanted.HealthMonitor();
             // this._cursorExperienceMonitor = new Wanted.ExperienceMonitor();
             // this._rankingsManager = new Wanted.RankingsManager();
             // this._environmentMonitor = new Wanted.EnvironmentMonitor(areaRenderer, this._cursorManager.UserCursorManager);
-            // this._leaderboardManager = new Wanted.LeaderboardManager(this._myCursorId, keyboard, serverAdapter);
+            this._leaderboardManager = new Wanted.LeaderboardManager(this._myCursorId, keyboard, serverAdapter);
             // this._deathScreen = new Wanted.DeathScreen();
             // this._notificationManager = new Wanted.NotificationManager(serverAdapter);
-            // this._userInformationManager = new Wanted.UserInformationManager(initialization.UserInformation);
-            // this._chat = new Wanted.Chat(initialization.UserInformation, serverAdapter);
+            this._userInformationManager = new Wanted.UserInformationManager(initialization.userInformation);
+            // this._chat = new Wanted.Chat(initialization.userInformation, serverAdapter);
 
             this._logout.click(function () {
                 // Clear cookies
@@ -59,21 +59,21 @@ var Wanted;
         };
 
         HUDManager.prototype.LoadPayload = function (payload) {
-            this._rankingsManager.LoadPayload(payload);
-            this._environmentMonitor.LoadPayload(payload);
-            this._deathScreen.LoadPayload(payload);
-            this._notificationManager.LoadPayload(payload);
+            // this._rankingsManager.LoadPayload(payload);
+            // this._environmentMonitor.LoadPayload(payload);
+            // this._deathScreen.LoadPayload(payload);
+            // this._notificationManager.LoadPayload(payload);
         };
 
         HUDManager.prototype.Update = function (gameTime) {
             var cursor = this._cursorManager.GetCursor(this._myCursorId);
 
             if (cursor) {
-                this._cursorStatMonitor.Update(cursor);
+                // this._cursorStatMonitor.Update(cursor);
                 // this._cursorHealthMonitor.Update(cursor);
                 // this._cursorExperienceMonitor.Update(cursor);
-                this._environmentMonitor.Update(cursor);
-                this._rankingsManager.Update(cursor);
+                // this._environmentMonitor.Update(cursor);
+                // this._rankingsManager.Update(cursor);
             }
         };
         return HUDManager;

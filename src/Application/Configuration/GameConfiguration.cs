@@ -1,4 +1,6 @@
-﻿namespace Wanted.Application.Configuration
+﻿using Newtonsoft.Json;
+
+namespace Wanted.Application.Configuration
 {
     public class GameConfiguration
     {
@@ -14,9 +16,16 @@
             REQUEST_PING_EVERY = 5;
         }
 
+        [JsonProperty(PropertyName = "drawInterval")]
         public int DRAW_INTERVAL { get; set; }
+
+        [JsonProperty(PropertyName = "updateInterval")]
         public int UPDATE_INTERVAL { get; set; }
+
+        [JsonProperty(PropertyName = "leaderboardPushInterval")]
         public int LEADERBOARD_PUSH_INTERVAL { get; set; }
+
+        [JsonProperty(PropertyName = "requestPingEvery")]
         public int REQUEST_PING_EVERY { get; set; }
     }
 }

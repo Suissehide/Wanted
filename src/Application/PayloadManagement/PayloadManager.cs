@@ -64,7 +64,7 @@ namespace Wanted.Application.PayloadManagement
             });
 
             // Remove all disposed objects from the map
-            //_map.Clean();
+            map.Clean();
 
             return payloads;
         }

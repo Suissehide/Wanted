@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.SignalR;
+using Newtonsoft.Json;
 using Wanted.Application.Configuration;
 using Wanted.Application.CursorEntity;
 using Wanted.Application.GenericManagers;
@@ -69,7 +70,7 @@ namespace Wanted.Application
                 var utcNow = DateTime.UtcNow;
                 _gameTime.Update(utcNow);
 
-                await GameHandler.Update(_gameTime);
+                GameHandler.Update(_gameTime);
 
                 if (_actualFPS <= _drawFPS || (++_drawCount) % DRAW_AFTER == 0)
                 {
@@ -101,6 +102,7 @@ namespace Wanted.Application
 
             foreach (string connectionId in payloads.Keys)
             {
+                // System.Diagnostics.Debug.WriteLine(JsonConvert.SerializeObject(payloads[connectionId]));
                 await UserHandler.GetUser(connectionId).PushToClientAsync(payloads[connectionId], _mainHub);
             }
         }
@@ -154,7 +156,9 @@ namespace Wanted.Application
                     };
                 }
                 catch
-                { }
+                {
+                    System.Diagnostics.Debug.WriteLine("Error: initialisation");
+                }
                 finally
                 {
                     _gameLock.Release();
@@ -174,6 +178,7 @@ namespace Wanted.Application
             }
             catch (Exception e)
             {
+                System.Diagnostics.Debug.WriteLine(e);
                 //ErrorLog.Instance.Log(e);
             }
         }

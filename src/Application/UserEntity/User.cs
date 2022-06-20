@@ -8,10 +8,10 @@ namespace Wanted.Application.UserEntity
 {
     public class User
     {
-        public const int MAX_SCREEN_WIDTH = 2000;
-        public const int MAX_SCREEN_HEIGHT = 2000;
-        public const int MIN_SCREEN_WIDTH = 1000;
-        public const int MIN_SCREEN_HEIGHT = 660;
+        public const int MAX_SCREEN_WIDTH = 1920;
+        public const int MAX_SCREEN_HEIGHT = 1080;
+        public const int MIN_SCREEN_WIDTH = 800;
+        public const int MIN_SCREEN_HEIGHT = 480;
 
         private Size _viewport;
         public List<User> RemoteControllers { get; } = new List<User>();

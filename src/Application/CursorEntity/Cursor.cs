@@ -1,4 +1,5 @@
-﻿using System.Numerics;
+﻿using System.Collections.Concurrent;
+using System.Numerics;
 using Wanted.Application.UserEntity;
 using Wanted.Application.Utilities;
 
@@ -15,7 +16,8 @@ namespace Wanted.Application.CursorEntity
 
         protected static bool _altered = true;
 
-        private Game _game;
+        private ConcurrentQueue<Action> _enqueuedCommands;
+        private readonly Game _game;
 
         public Cursor(Game game)
         {
@@ -23,6 +25,8 @@ namespace Wanted.Application.CursorEntity
             Id = Interlocked.Increment(ref _cursorGUID);
             _serverId = Interlocked.Increment(ref _itemCount);
             StatRecorder = new CursorStatRecorder(this);
+
+            _enqueuedCommands = new ConcurrentQueue<Action>();
         }
 
         public int Id { get; set; }
@@ -57,9 +61,31 @@ namespace Wanted.Application.CursorEntity
             Disposed = true;
         }
 
+        public void RegisterMove(bool isMoving, Vector2 at)
+        {
+            // System.Diagnostics.Debug.WriteLine("Move: ", at.X, " : ", at.Y);
+
+            Host.IdleManager.RecordActivity();
+
+            _enqueuedCommands.Enqueue(() =>
+            {
+                Position = at;
+            });
+        }
+
         public virtual void Update(GameTime gameTime)
         {
             LastUpdated = DateTime.UtcNow;
+
+            Action command;
+
+            while (_enqueuedCommands.Count > 0)
+            {
+                if (_enqueuedCommands.TryDequeue(out command) && !this.Disposed)
+                {
+                    command();
+                }
+            }
         }
     }
 }

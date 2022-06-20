@@ -32,11 +32,12 @@ namespace Wanted.Boostrap
             services.AddSwaggerGen();
 
             services.AddSignalR()
-                .AddJsonProtocol(o =>
+                /*.AddJsonProtocol(o =>
                 {
-                    o.PayloadSerializerOptions.PropertyNamingPolicy = null;
+                    //o.PayloadSerializerOptions.PropertyNamingPolicy = null;
                     //o.PayloadSerializerOptions.ContractResolver = new Newtonsoft.Json.Serialization.DefaultContractResolver();
-                });
+                });*/
+                .AddNewtonsoftJsonProtocol();
 
             services.AddSingleton<Game>();
             services.AddAuthentication().AddCookie();

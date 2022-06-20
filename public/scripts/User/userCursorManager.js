@@ -22,28 +22,11 @@ var Wanted;
             //     }
             // });
 
-            this._cursorInputController = new Wanted.CursorInputController(input.Keyboard, function (direction, startMoving) {
+            this._cursorInputController = new Wanted.CursorInputController(input.Keyboard, input.Mouse, function (position, isMoving) {
                 var cursor = _this._cursorManager.GetCursor(_this.ControlledCursorId);
 
-                if (cursor && cursor.MovementController.Controllable && cursor.LifeController.Alive) {
-                    if (startMoving) {
-                        if (direction === "Boost") {
-                            _this.Invoke("registerAbilityStart", _this.LatencyResolver.TryRequestPing(), _this.NewAbilityCommand(direction, true));
-
-                            cursor.AbilityHandler.Activate(direction);
-                            // Don't want to trigger a server command if we're already moving in the direction
-                        } else if (!cursor.MovementController.IsMovingInDirection(direction)) {
-                            _this.Invoke("registerMoveStart", _this.LatencyResolver.TryRequestPing(), _this.NewMovementCommand(direction, true));
-
-                            cursor.MovementController.Move(direction, startMoving);
-                        }
-                    } else {
-                        if (cursor.MovementController.IsMovingInDirection(direction)) {
-                            _this.Invoke("registerMoveStop", _this.LatencyResolver.TryRequestPing(), _this.NewMovementCommand(direction, false));
-
-                            cursor.MovementController.Move(direction, startMoving);
-                        }
-                    }
+                if (cursor) {
+                    _this.Invoke("registerMove", position, isMoving, _this.LatencyResolver.TryRequestPing());
                 }
             }, function (clickMethod) {
                 var hubMethod = clickMethod.substr(0, 1).toUpperCase() + clickMethod.substring(1);
@@ -54,49 +37,30 @@ var Wanted;
         UserCursorManager.prototype.LoadPayload = function (payload) {
             var cursor = this._cursorManager.GetCursor(this.ControlledCursorId);
 
-            if (cursor) {
-                cursor.LevelManager.UpdateExperience(payload.Experience, payload.ExperienceToNextLevel);
-            }
+            // if (cursor) {
+            //     cursor.LevelManager.UpdateExperience(payload.Experience, payload.ExperienceToNextLevel);
+            // }
         };
 
         UserCursorManager.prototype.Update = function (gameTime) {
             var cursor = this._cursorManager.GetCursor(this.ControlledCursorId);
 
-            if (cursor) {
-                if (eg.TimeSpan.DateSpan(this._lastSync, gameTime.Now).Seconds > UserCursorManager.SYNC_INTERVAL.Seconds && cursor.LifeController.Alive) {
-                    this._lastSync = gameTime.Now;
-                    this._connection.invoke("syncMovement", { X: Math.round(cursor.MovementController.Position.X - cursor.Graphic.Size.HalfWidth), Y: Math.round(cursor.MovementController.Position.Y - cursor.Graphic.Size.HalfHeight) }, Math.roundTo(cursor.MovementController.Rotation * 57.2957795, 2), { X: Math.round(cursor.MovementController.Velocity.X), Y: Math.round(cursor.MovementController.Velocity.Y) });
-                }
+            // if (cursor) {
+            //     if (eg.TimeSpan.DateSpan(this._lastSync, gameTime.Now).Seconds > UserCursorManager.SYNC_INTERVAL.Seconds && cursor.LifeController.Alive) {
+            //         this._lastSync = gameTime.Now;
+            //         this._connection.invoke("syncMovement", { X: Math.round(cursor.MovementController.Position.X - cursor.Graphic.Size.HalfWidth), Y: Math.round(cursor.MovementController.Position.Y - cursor.Graphic.Size.HalfHeight) }, Math.roundTo(cursor.MovementController.Rotation * 57.2957795, 2), { X: Math.round(cursor.MovementController.Velocity.X), Y: Math.round(cursor.MovementController.Velocity.Y) });
+            //     }
 
-                this._userCameraController.Update(gameTime);
-            }
+            //     this._userCameraController.Update(gameTime);
+            // }
         };
 
-        UserCursorManager.prototype.Invoke = function (method, pingBack, command) {
+        UserCursorManager.prototype.Invoke = function (method, position, isMoving, pingBack) {
             var cursor = this._cursorManager.GetCursor(this.ControlledCursorId);
 
-            this._connection.invoke(method, command.Command, { X: Math.round(cursor.MovementController.Position.X - cursor.Graphic.Size.HalfWidth), Y: Math.round(cursor.MovementController.Position.Y - cursor.Graphic.Size.HalfHeight) }, Math.roundTo(cursor.MovementController.Rotation * 57.2957795, 2), { X: Math.round(cursor.MovementController.Velocity.X), Y: Math.round(cursor.MovementController.Velocity.Y) }, pingBack);
+            this._connection.invoke(method, isMoving, { X: Math.round(position.X - cursor.Graphic.Size.HalfWidth), Y: Math.round(position.Y - cursor.Graphic.Size.HalfHeight) }, pingBack);
         };
 
-        UserCursorManager.prototype.NewMovementCommand = function (direction, startMoving) {
-            var command = {
-                Command: direction,
-                Start: startMoving,
-                IsAbility: false
-            };
-
-            return command;
-        };
-
-        UserCursorManager.prototype.NewAbilityCommand = function (ability, startMoving) {
-            var command = {
-                Command: ability,
-                Start: startMoving,
-                IsAbility: true
-            };
-
-            return command;
-        };
         UserCursorManager.SYNC_INTERVAL = eg.TimeSpan.FromSeconds(1.5);
         return UserCursorManager;
     })();

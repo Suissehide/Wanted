@@ -31,7 +31,7 @@ namespace Wanted.Application.CursorEntity
             Cursors.TryRemove(key, out var _);
         }
 
-        public async Task Update(GameTime gameTime)
+        public void Update(GameTime gameTime)
         {
             var keysToRemove = new List<string>(Cursors.Count);
             Parallel.ForEach(Cursors, currentCursor =>

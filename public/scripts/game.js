@@ -15,14 +15,14 @@ var Wanted;
             var _this = this;
             _super.call(this, gameCanvas);
 
-            Game.GameConfiguration = new Wanted.ConfigurationManager(initializationData.Configuration);
+            Game.GameConfiguration = new Wanted.ConfigurationManager(initializationData.configuration);
 
             // this.Configuration.CollisionConfiguration.MinQuadTreeNodeSize = new eg.Size2d(75);
             // this.Configuration.CollisionConfiguration.InitialQuadTreeSize = new eg.Size2d(10125);
 
-            // this._bufferedViewport = new eg.Bounds.BoundingRectangle(this.Scene.Camera.Position, this.Scene.Camera.Size.Add(Wanted.GameScreen.SCREEN_BUFFER_AREA));
+            this._bufferedViewport = new eg.Bounds.BoundingRectangle(this.Scene.Camera.Position, this.Scene.Camera.Size.Add(Wanted.GameScreen.SCREEN_BUFFER_AREA));
             this._cursorManager = new Wanted.CursorManager(this._bufferedViewport, this.Scene, this.CollisionManager, this.Content);
-            this._cursorManager.Initialize(new Wanted.UserCursorManager(initializationData.CursorId, this._cursorManager, this.Input, serverAdapter));
+            this._cursorManager.Initialize(new Wanted.UserCursorManager(initializationData.cursorId, this._cursorManager, this.Input, serverAdapter));
             // this._map = new Wanted.Map(this.Scene, this.CollisionManager, this.Content, this.Input.Keyboard, serverAdapter);
             this._hud = new Wanted.HUDManager(initializationData, this._cursorManager, this.Input.Keyboard, serverAdapter);
             // this._debugManager = new Wanted.Debug.DebugManager(initializationData.CursorId, this, serverAdapter);
@@ -33,20 +33,19 @@ var Wanted;
                 // _this._debugManager.LoadPayload(payload);
             });
 
-            // gameScreen.OnResize.Bind(function (newSize) {
-            //     _this._hud.OnScreenResize(newSize);
-            //     _this._bufferedViewport.Size = newSize.Add(Wanted.GameScreen.SCREEN_BUFFER_AREA);
-            // });
-            return _super !== null && _super.apply(this, arguments) || this;
+            gameScreen.OnResize.Bind(function (newSize) {
+                // _this._hud.OnScreenResize(newSize);
+                _this._bufferedViewport.Size = newSize.Add(Wanted.GameScreen.SCREEN_BUFFER_AREA);
+            });
         }
         Game.prototype.LoadContent = function () {
-            // this.Content.LoadImage("StarBackground", "/Images/bg_stars.png", 1000, 1000);
+            this.Content.LoadImage("Cursor", "../assets/cursor.png", 512, 512);
 
-            // Wanted.CursorBodyGraphic.LoadCursorBodies(this.Content);
+            Wanted.CursorBodyGraphic.LoadCursorBodies(this.Content);
         };
 
         Game.prototype.Update = function (gameTime) {
-            // this._bufferedViewport.Position = this.Scene.Camera.Position;
+            this._bufferedViewport.Position = this.Scene.Camera.Position;
 
             this._cursorManager.Update(gameTime);
             this._hud.Update(gameTime);

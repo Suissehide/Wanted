@@ -11,16 +11,15 @@ $(function () {
         popUpHolder = $("#popUpHolder"),
         gameContent = $("#gameContent"),
         loadContent = $("#loadContent"),
-        serverAdapter = new Wanted.Server.ServerAdapter(connection, "wanted.state")
-        gameScreen = new Wanted.GameScreen(gameCanvas, popUpHolder, serverAdapter)
-        ;
+        serverAdapter = new Wanted.Server.ServerAdapter(connection, "wanted.state"),
+        gameScreen = new Wanted.GameScreen(gameCanvas, popUpHolder, serverAdapter);
 
     console.log("SERVER ADAPTER", serverAdapter);
 
     serverAdapter.Negotiate().done(function (initializationData) {
         loadContent.hide();
         gameContent.show();
-
+    
         game = new Wanted.Game(gameCanvas[0], gameScreen, serverAdapter, initializationData);
         gameScreen.ForceResizeCheck();
     });

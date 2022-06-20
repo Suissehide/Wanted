@@ -33,9 +33,9 @@ var Wanted;
                 this.Connection.start().then(function () {
                     var userInformation = _this._connectionManager.PrepareRegistration();
                     _this.TryInitialize(userInformation, function (initialization) {
-                        initialization.UserInformation = userInformation;
+                        initialization.userInformation = userInformation;
                         console.log(initialization);
-                        _this._payloadDecompressor = new Server.PayloadDecompressor(initialization.CompressionContracts);
+                        _this._payloadDecompressor = new Server.PayloadDecompressor(initialization.compressionContracts);
 
                         result.resolve(initialization);
 
@@ -72,16 +72,20 @@ var Wanted;
             ServerAdapter.prototype.Wire = function () {
                 var _this = this;
                 this.Connection.on("d", function (payload) {
-                    console.log("Payload", payload);
-                    _this._payloadDecompressor.Decompress(payload);
+                    // console.log("Payload: ", payload);
+                    try {
+                        _this.OnPayload.Trigger(_this._payloadDecompressor.Decompress(payload));
+                    } catch(e) {
+                        console.log("error:", e)
+                    }
                 });
 
                 this.Connection.on("l", function (leaderboardUpdate) {
-                    _this._payloadDecompressor.DecompressLeaderboard(leaderboardUpdate);
+                    _this.OnLeaderboardUpdate.Trigger(_this._payloadDecompressor.DecompressLeaderboard(leaderboardUpdate));
                 });
 
                 this.Connection.on("disconnect", function () {
-                //     _this.OnForcedDisconnct.Trigger();
+                    _this.OnForcedDisconnect.Trigger();
                 });
 
                 this.Connection.on("controlTransferred", function () {
@@ -89,7 +93,7 @@ var Wanted;
                 });
 
                 this.Connection.on("pingBack", function () {
-                //     _this.OnPingRequest.Trigger();
+                    _this.OnPingRequest.Trigger();
                 });
 
                 this.Connection.on("mapSizeIncreased", function (size) {

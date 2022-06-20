@@ -2817,6 +2817,7 @@ var GameRunnerInstance = new EndGate._.GameRunner();
                 // Create an equally sized canvas for a buffer
                 this._BufferCanvas = document.createElement("canvas");
                 this._BufferContext = this._BufferCanvas.getContext("2d");
+                this._BufferContext.imageSmoothingEnabled = false;
                 this._onRendererSizeChange = new EndGate.EventHandler1();
                 this.UpdateBufferSize();
 
@@ -3512,7 +3513,7 @@ var GameRunnerInstance = new EndGate._.GameRunner();
                 return Input._.MouseButton.Right;
             };
 
-            MouseHandler.prototype.GetMouseScrollDierction = function (event) {
+            MouseHandler.prototype.GetMouseScrollDirection = function (event) {
                 return new EndGate.Vector2d(-Math.max(-1, Math.min(1, event.wheelDeltaX)), -Math.max(-1, Math.min(1, event.wheelDeltaY)));
             };
             MouseHandler.MouseButtonArray = [null, Input._.MouseButton.Left, Input._.MouseButton.Middle, Input._.MouseButton.Right];

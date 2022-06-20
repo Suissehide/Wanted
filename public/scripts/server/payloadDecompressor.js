@@ -2,20 +2,19 @@
     (function (Server) {
         var PayloadDecompressor = (function () {
             function PayloadDecompressor(contracts) {
-                console.log("CONTRACTS: ", contracts.PayloadContract);
-                this.PayloadContract = contracts.PayloadContract;
-                this.CursorContract = contracts.CursorContract;
-                this.LeaderboardEntryContract = contracts.LeaderboardEntryContract;
+                this.PayloadContract = contracts.payloadContract;
+                this.CursorContract = contracts.cursorContract;
+                this.LeaderboardEntryContract = contracts.leaderboardEntryContract;
             }
 
             PayloadDecompressor.prototype.DecompressCursor = function (cursor) {
+                // console.log(cursor[this.CursorContract.positionX], cursor[this.CursorContract.positionY]);
                 return {
-                    PositionX: cursor[this.CursorContract.PositionX],
-                    PositionY: cursor[this.CursorContract.PositionY],
-                    Name: cursor[this.CursorContract.Name],
-                    Wins: cursor[this.CursorContract.Wins],
-                    Id: cursor[this.CursorContract.Id],
-                    Disposed: !!cursor[this.CursorContract.Disposed]
+                    Position: new eg.Vector2d(cursor[this.CursorContract.positionX], cursor[this.CursorContract.positionY]),
+                    Name: cursor[this.CursorContract.name],
+                    Wins: cursor[this.CursorContract.wins],
+                    Id: cursor[this.CursorContract.id],
+                    Disposed: !!cursor[this.CursorContract.disposed]
                 }
             };
 
@@ -42,7 +41,6 @@
             };
 
             PayloadDecompressor.prototype.DecompressPayload = function (data) {
-                console.log(data, this.PayloadContract);
                 return {
                     Cursors: data[this.PayloadContract.cursors],
                     LeaderboardPosition: data[this.PayloadContract.leaderboardPosition],
@@ -58,7 +56,6 @@
                 for (i = 0; i < payload.Cursors.length; i++) {
                     payload.Cursors[i] = this.DecompressCursor(payload.Cursors[i]);
                 }
-                console.log(payload);
                 return payload;
             };
             return PayloadDecompressor;

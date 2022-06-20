@@ -25,10 +25,11 @@ var Wanted;
         };
 
         CursorManager.prototype.LoadPayload = function (payload) {
-            var _this = this;
-            var cursorPayload = payload.Cursors, cursor;
+            let _this = this;
+            let cursorPayload = payload.Cursors;
+            let cursor;
 
-            for (var i = 0; i < cursorPayload.length; i++) {
+            for (let i = 0; i < cursorPayload.length; i++) {
                 cursor = cursorPayload[i];
 
                 if (!this._cursors[cursor.Id]) {
@@ -42,16 +43,12 @@ var Wanted;
                     // this._collisionManager.Monitor(this._cursors[cursor.Id]);
                     this._scene.Add(this._cursors[cursor.Id].Graphic);
 
-                    // this._cursors[cursor.Id].OnDisposed.Bind(function (cursor) {
-                    //     delete _this._cursors[(cursor).Id];
-                    // });
+                    this._cursors[cursor.Id].OnDisposed.Bind(function (cursor) {
+                        delete _this._cursors[(cursor).Id];
+                    });
                 } else {
                     this._cursors[cursor.Id].LoadPayload(cursor);
                 }
-
-                // if (cursor.Disposed) {
-                //     this._cursors[cursor.Id].Destroy(!cursor.LifeController.Alive);
-                // }
             }
 
             this.UserCursorManager.LoadPayload(payload);
@@ -64,11 +61,11 @@ var Wanted;
 
             this.UserCursorManager.Update(gameTime);
 
-            for (var id in this._cursors) {
-                if (!this._cursors[id].Bounds.IntersectsRectangle(this._viewport)) {
-                    this._cursors[id].Destroy();
-                }
-            }
+            // for (var id in this._cursors) {
+            //     if (!this._cursors[id].Bounds.IntersectsRectangle(this._viewport)) {
+            //         this._cursors[id].Destroy();
+            //     }
+            // }
         };
         return CursorManager;
     })();

@@ -32,9 +32,9 @@ namespace Wanted.Application.GenericManagers
             }
         }
 
-        public async Task Update(GameTime gameTime)
+        public void Update(GameTime gameTime)
         {
-            await _cursorManager.Update(gameTime);
+            _cursorManager.Update(gameTime);
         }
     }
 }

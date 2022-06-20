@@ -9,7 +9,7 @@
             _me = me;
         }
 
-        public int Wins { get; set; }
+        public int Wins { get; set; } = 0;
 
         public void CursorWin()
         {

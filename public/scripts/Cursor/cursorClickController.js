@@ -1,31 +1,31 @@
 var Wanted;
 (function (Wanted) {
     var CursorClickController = (function () {
-        function CursorClickController(keyboard, onClick) {
-            var autoClickHandle, ClickdAt = 0, singleClickMode = true, lastShot = 0;
+        function CursorClickController(mouse, onClick) {
+            var autoClickHandle, ClickedAt = 0, singleClickMode = true, lastShot = 0;
 
-            keyboard.OnCommandDown("space", function () {
-                var timeSinceClickd;
+            mouse.OnDown.Bind((e) => {
+                var timeSinceClicked;
 
-                ClickdAt = new Date().getTime();
+                ClickedAt = new Date().getTime();
 
                 if (singleClickMode) {
-                    timeSinceClickd = ClickdAt - lastShot;
+                    timeSinceClicked = ClickedAt - lastShot;
 
-                    if (timeSinceClickd > CursorClickController.MIN_Click_RATE.Milliseconds) {
-                        lastShot = ClickdAt;
+                    if (timeSinceClicked > CursorClickController.MIN_CLICK_RATE.Milliseconds) {
+                        lastShot = ClickedAt;
                         onClick("Click");
                     }
 
                     autoClickHandle = setTimeout(function () {
                         singleClickMode = false;
                         onClick("StartClick");
-                    }, CursorClickController.MIN_Click_RATE.Milliseconds);
+                    }, CursorClickController.MIN_CLICK_RATE.Milliseconds);
                 } else {
                     onClick("StartClick");
                 }
             });
-            keyboard.OnCommandUp("space", function () {
+            mouse.OnUp.Bind((e) => {
                 var timeClickReleased;
 
                 clearTimeout(autoClickHandle);
@@ -36,7 +36,7 @@ var Wanted;
                     onClick("StopClick");
                 }
 
-                singleClickMode = timeClickReleased - ClickdAt < CursorClickController.MIN_Click_RATE.Milliseconds;
+                singleClickMode = timeClickReleased - ClickedAt < CursorClickController.MIN_CLICK_RATE.Milliseconds;
             });
         }
         return CursorClickController;

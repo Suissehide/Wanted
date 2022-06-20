@@ -1,12 +1,15 @@
-﻿namespace Wanted.Application.Configuration
+﻿using Newtonsoft.Json;
+
+namespace Wanted.Application.Configuration
 {
     public class RuntimeConfiguration
     {
         public RuntimeConfiguration()
         {
-            MaxServerUsers = 2000;
+            MAX_SERVER_USERS = 2000;
         }
 
-        public int MaxServerUsers { get; set; }
+        [JsonProperty(PropertyName = "maxServerUsers")]
+        public int MAX_SERVER_USERS { get; set; }
     }
 }

@@ -18,7 +18,7 @@ var Wanted;
                 }, 250);
             });
 
-            //this.ForceResizeCheck();
+            this.ForceResizeCheck();
         }
         GameScreen.prototype.ForceResizeCheck = function () {
             this.ScreenResizeEvent();
@@ -53,16 +53,16 @@ var Wanted;
         };
 
         GameScreen.prototype.UpdateViewport = function () {
-            return new eg.Size2d(Math.max(Math.min($(window).width(), GameScreen.MAX_SCREEN_WIDTH), GameScreen.MIN_SCREEN_WIDTH), Math.max(Math.min($(window).height() - this._gameHUDHeight, GameScreen.MAX_SCREEN_HEIGHT), GameScreen.MIN_SCREEN_HEIGHT));
+            return new eg.Size2d(Math.max(Math.min($(window).width(), GameScreen.MAX_SCREEN_WIDTH), GameScreen.MIN_SCREEN_WIDTH), Math.max(Math.min($(window).height() - this._gameHUDHeight - 3, GameScreen.MAX_SCREEN_HEIGHT), GameScreen.MIN_SCREEN_HEIGHT));
         };
 
         GameScreen.prototype.SendNewViewportToServer = function () {
             // this._serverAdapter.Connection.invoke("changeViewport", this.Viewport.Width, this.Viewport.Height);
         };
-        GameScreen.MAX_SCREEN_WIDTH = 10000;
-        GameScreen.MAX_SCREEN_HEIGHT = 10000;
-        GameScreen.MIN_SCREEN_WIDTH = -1;
-        GameScreen.MIN_SCREEN_HEIGHT = -1;
+        GameScreen.MAX_SCREEN_WIDTH = 1920;
+        GameScreen.MAX_SCREEN_HEIGHT = 1080;
+        GameScreen.MIN_SCREEN_WIDTH = 800;
+        GameScreen.MIN_SCREEN_HEIGHT = 480;
         GameScreen.SCREEN_BUFFER_AREA = 200;
         return GameScreen;
     })();

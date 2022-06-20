@@ -8,6 +8,7 @@
             ScreenConfig = new ScreenConfiguration();
             LeaderboardConfig = new LeaderboardConfiguration();
             RuntimeConfig = new RuntimeConfiguration();
+            CursorConfig = new CursorConfiguration();
         }
 
         // Game Configurations
@@ -21,5 +22,8 @@
 
         // Runtime Configurations
         public RuntimeConfiguration RuntimeConfig { get; set; }
+
+        // Cursor Configurations
+        public CursorConfiguration CursorConfig { get; set; }
     }
 }

@@ -2817,6 +2817,7 @@ var GameRunnerInstance = new EndGate._.GameRunner();
                 // Create an equally sized canvas for a buffer
                 this._BufferCanvas = document.createElement("canvas");
                 this._BufferContext = this._BufferCanvas.getContext("2d");
+                this._BufferContext.imageSmoothingEnabled = false;
                 this._onRendererSizeChange = new EndGate.EventHandler1();
                 this.UpdateBufferSize();
 
@@ -3512,7 +3513,7 @@ var GameRunnerInstance = new EndGate._.GameRunner();
                 return Input._.MouseButton.Right;
             };
 
-            MouseHandler.prototype.GetMouseScrollDierction = function (event) {
+            MouseHandler.prototype.GetMouseScrollDirection = function (event) {
                 return new EndGate.Vector2d(-Math.max(-1, Math.min(1, event.wheelDeltaX)), -Math.max(-1, Math.min(1, event.wheelDeltaY)));
             };
             MouseHandler.MouseButtonArray = [null, Input._.MouseButton.Left, Input._.MouseButton.Middle, Input._.MouseButton.Right];
@@ -10907,6 +10908,63 @@ var Wanted;
 })(Wanted || (Wanted = {}));
 /*next file*/
 
+var Wanted;
+(function (Wanted) {
+    function StandardDeviation(arr) {
+        var average = Average(arr), sum = 0;
+
+        for (var i = 0; i < arr.length; i++) {
+            sum += Math.pow(arr[i] - average, 2);
+        }
+
+        return Math.sqrt(sum / (arr.length - 1));
+    }
+    Wanted.StandardDeviation = StandardDeviation;
+
+    function Average(arr) {
+        var sum = 0;
+        for (var i = 0; i < arr.length; i++) {
+            sum += arr[i];
+        }
+
+        return sum / arr.length;
+    }
+    Wanted.Average = Average;
+
+    const RandomRange = (min, max) => min + Math.random() * (max - min);
+    Wanted.RandomRange = RandomRange;
+
+    const RandomIndex = array => RandomRange(0, array.length) | 0;
+    Wanted.RandomIndex = RandomIndex;
+
+    const RemoveFromArray = (array, i) => array.splice(i, 1)[0];
+    Wanted.RemoveFromArray = RemoveFromArray;
+
+    const RemoveItemFromArray = (array, item) => RemoveFromArray(array, array.indexOf(item));
+    Wanted.RemoveItemFromArray = RemoveItemFromArray;
+
+    const RemoveRandomFromArray = array => RemoveFromArray(array, RandomIndex(array));
+    Wanted.RemoveRandomFromArray = RemoveRandomFromArray;
+
+    const GetRandomFromArray = (array) => array[RandomIndex(array) | 0];
+    Wanted.GetRandomFromArray = GetRandomFromArray;
+
+    Wanted.delay = (function () {
+        var timer = 0;
+        return function (callback, ms) {
+            clearTimeout(timer);
+            timer = setTimeout(callback, ms);
+        };
+    })();
+
+    jQuery.fn.flash = function (color, duration) {
+        this.stop(true);
+        var current = this.css('backgroundColor');
+        this.animate({ backgroundColor: 'rgb(' + color + ')' }, duration / 2).animate({ backgroundColor: current }, duration / 2);
+    };
+})(Wanted || (Wanted = {}));
+/*next file*/
+
 var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -10924,14 +10982,14 @@ var Wanted;
             var _this = this;
             _super.call(this, gameCanvas);
 
-            Game.GameConfiguration = new Wanted.ConfigurationManager(initializationData.Configuration);
+            Game.GameConfiguration = new Wanted.ConfigurationManager(initializationData.configuration);
 
             // this.Configuration.CollisionConfiguration.MinQuadTreeNodeSize = new eg.Size2d(75);
             // this.Configuration.CollisionConfiguration.InitialQuadTreeSize = new eg.Size2d(10125);
 
-            // this._bufferedViewport = new eg.Bounds.BoundingRectangle(this.Scene.Camera.Position, this.Scene.Camera.Size.Add(Wanted.GameScreen.SCREEN_BUFFER_AREA));
+            this._bufferedViewport = new eg.Bounds.BoundingRectangle(this.Scene.Camera.Position, this.Scene.Camera.Size.Add(Wanted.GameScreen.SCREEN_BUFFER_AREA));
             this._cursorManager = new Wanted.CursorManager(this._bufferedViewport, this.Scene, this.CollisionManager, this.Content);
-            this._cursorManager.Initialize(new Wanted.UserCursorManager(initializationData.CursorId, this._cursorManager, this.Input, serverAdapter));
+            this._cursorManager.Initialize(new Wanted.UserCursorManager(initializationData.cursorId, this._cursorManager, this.Input, serverAdapter));
             // this._map = new Wanted.Map(this.Scene, this.CollisionManager, this.Content, this.Input.Keyboard, serverAdapter);
             this._hud = new Wanted.HUDManager(initializationData, this._cursorManager, this.Input.Keyboard, serverAdapter);
             // this._debugManager = new Wanted.Debug.DebugManager(initializationData.CursorId, this, serverAdapter);
@@ -10942,20 +11000,19 @@ var Wanted;
                 // _this._debugManager.LoadPayload(payload);
             });
 
-            // gameScreen.OnResize.Bind(function (newSize) {
-            //     _this._hud.OnScreenResize(newSize);
-            //     _this._bufferedViewport.Size = newSize.Add(Wanted.GameScreen.SCREEN_BUFFER_AREA);
-            // });
-            return _super !== null && _super.apply(this, arguments) || this;
+            gameScreen.OnResize.Bind(function (newSize) {
+                // _this._hud.OnScreenResize(newSize);
+                _this._bufferedViewport.Size = newSize.Add(Wanted.GameScreen.SCREEN_BUFFER_AREA);
+            });
         }
         Game.prototype.LoadContent = function () {
-            // this.Content.LoadImage("StarBackground", "/Images/bg_stars.png", 1000, 1000);
+            this.Content.LoadImage("Cursor", "../assets/cursor.png", 512, 512);
 
-            // Wanted.CursorBodyGraphic.LoadCursorBodies(this.Content);
+            Wanted.CursorBodyGraphic.LoadCursorBodies(this.Content);
         };
 
         Game.prototype.Update = function (gameTime) {
-            // this._bufferedViewport.Position = this.Scene.Camera.Position;
+            this._bufferedViewport.Position = this.Scene.Camera.Position;
 
             this._cursorManager.Update(gameTime);
             this._hud.Update(gameTime);
@@ -10995,7 +11052,7 @@ var Wanted;
                 }, 250);
             });
 
-            //this.ForceResizeCheck();
+            this.ForceResizeCheck();
         }
         GameScreen.prototype.ForceResizeCheck = function () {
             this.ScreenResizeEvent();
@@ -11030,16 +11087,16 @@ var Wanted;
         };
 
         GameScreen.prototype.UpdateViewport = function () {
-            return new eg.Size2d(Math.max(Math.min($(window).width(), GameScreen.MAX_SCREEN_WIDTH), GameScreen.MIN_SCREEN_WIDTH), Math.max(Math.min($(window).height() - this._gameHUDHeight, GameScreen.MAX_SCREEN_HEIGHT), GameScreen.MIN_SCREEN_HEIGHT));
+            return new eg.Size2d(Math.max(Math.min($(window).width(), GameScreen.MAX_SCREEN_WIDTH), GameScreen.MIN_SCREEN_WIDTH), Math.max(Math.min($(window).height() - this._gameHUDHeight - 3, GameScreen.MAX_SCREEN_HEIGHT), GameScreen.MIN_SCREEN_HEIGHT));
         };
 
         GameScreen.prototype.SendNewViewportToServer = function () {
             // this._serverAdapter.Connection.invoke("changeViewport", this.Viewport.Width, this.Viewport.Height);
         };
-        GameScreen.MAX_SCREEN_WIDTH = 10000;
-        GameScreen.MAX_SCREEN_HEIGHT = 10000;
-        GameScreen.MIN_SCREEN_WIDTH = -1;
-        GameScreen.MIN_SCREEN_HEIGHT = -1;
+        GameScreen.MAX_SCREEN_WIDTH = 1920;
+        GameScreen.MAX_SCREEN_HEIGHT = 1080;
+        GameScreen.MIN_SCREEN_WIDTH = 800;
+        GameScreen.MIN_SCREEN_HEIGHT = 480;
         GameScreen.SCREEN_BUFFER_AREA = 200;
         return GameScreen;
     })();
@@ -11060,16 +11117,15 @@ $(function () {
         popUpHolder = $("#popUpHolder"),
         gameContent = $("#gameContent"),
         loadContent = $("#loadContent"),
-        serverAdapter = new Wanted.Server.ServerAdapter(connection, "wanted.state")
-        gameScreen = new Wanted.GameScreen(gameCanvas, popUpHolder, serverAdapter)
-        ;
+        serverAdapter = new Wanted.Server.ServerAdapter(connection, "wanted.state"),
+        gameScreen = new Wanted.GameScreen(gameCanvas, popUpHolder, serverAdapter);
 
     console.log("SERVER ADAPTER", serverAdapter);
 
     serverAdapter.Negotiate().done(function (initializationData) {
         loadContent.hide();
         gameContent.show();
-
+    
         game = new Wanted.Game(gameCanvas[0], gameScreen, serverAdapter, initializationData);
         gameScreen.ForceResizeCheck();
     });
@@ -11141,7 +11197,7 @@ var Wanted;
             // Wanted.Cursor.SIZE = new eg.Size2d(configuration.shipConfig.WIDTH, configuration.shipConfig.HEIGHT);
             // Wanted.Cursor.DAMAGE_INCREASE_RATE = configuration.shipConfig.DAMAGE_INCREASE_RATE;
 
-            // Wanted.CursorFireController.MIN_FIRE_RATE = eg.TimeSpan.FromMilliseconds(configuration.shipConfig.MIN_FIRE_RATE);
+            Wanted.CursorClickController.MIN_CLICK_RATE = eg.TimeSpan.FromMilliseconds(configuration.cursorConfig.minFireRate);
 
             // Wanted.CursorMovementController.DRAG_AREA = configuration.shipMovementControllerConfig.DRAG_AREA;
             // Wanted.CursorMovementController.DRAG_COEFFICIENT = configuration.shipMovementControllerConfig.DRAG_COEFFICIENT;
@@ -11157,11 +11213,11 @@ var Wanted;
             // Wanted.Map.SIZE = new eg.Size2d(configuration.mapConfig.WIDTH, configuration.mapConfig.HEIGHT);
             // Wanted.Map.BARRIER_DEPRECATION = configuration.mapConfig.BARRIER_DEPRECATION;
 
-            Wanted.GameScreen.MAX_SCREEN_HEIGHT = configuration.ScreenConfig.MAX_SCREEN_HEIGHT;
-            Wanted.GameScreen.MAX_SCREEN_WIDTH = configuration.ScreenConfig.MAX_SCREEN_WIDTH;
-            Wanted.GameScreen.MIN_SCREEN_HEIGHT = configuration.ScreenConfig.MIN_SCREEN_HEIGHT;
-            Wanted.GameScreen.MIN_SCREEN_WIDTH = configuration.ScreenConfig.MIN_SCREEN_WIDTH;
-            Wanted.GameScreen.SCREEN_BUFFER_AREA = configuration.ScreenConfig.SCREEN_BUFFER_AREA;
+            Wanted.GameScreen.SCREEN_BUFFER_AREA = configuration.screenConfig.screenBufferArea;
+            Wanted.GameScreen.MAX_SCREEN_WIDTH = configuration.screenConfig.maxScreenWidth;
+            Wanted.GameScreen.MAX_SCREEN_HEIGHT = configuration.screenConfig.maxScreenHeight;
+            Wanted.GameScreen.MIN_SCREEN_WIDTH = configuration.screenConfig.minScreenWidth;
+            Wanted.GameScreen.MIN_SCREEN_HEIGHT = configuration.screenConfig.minScreenHeight;
 
             // Wanted.Bullet.BULLET_DIE_AFTER = eg.TimeSpan.FromMilliseconds(configuration.GameConfig.BULLET_DIE_AFTER);
             // Wanted.Bullet.SIZE = new eg.Size2d(configuration.bulletConfig.WIDTH, configuration.bulletConfig.HEIGHT);
@@ -11169,12 +11225,12 @@ var Wanted;
             // Wanted.HealthPack.SIZE = new eg.Size2d(configuration.healthPackConfig.WIDTH, configuration.healthPackConfig.HEIGHT);
             // Wanted.HealthPack.LIFE_SPAN = eg.TimeSpan.FromMilliseconds(configuration.healthPackConfig.LIFE_SPAN);
 
-            Wanted.LeaderboardManager.LEADERBOARD_SIZE = configuration.LeaderboardConfig.LEADERBOARD_SIZE;
+            Wanted.LeaderboardManager.LEADERBOARD_SIZE = configuration.leaderboardConfig.leaderboardSize;
 
             // Wanted.DeathScreen.RESPAWN_TIMER = eg.TimeSpan.FromSeconds(configuration.GameConfig.RESPAWN_TIMER);
 
             $.extend(this, configuration);
-            Wanted.LatencyResolver.REQUEST_PING_EVERY = configuration.GameConfig.REQUEST_PING_EVERY;
+            Wanted.LatencyResolver.REQUEST_PING_EVERY = configuration.gameConfig.requestPingEvery;
         }
         return ConfigurationManager;
     })();
@@ -11186,20 +11242,19 @@ var Wanted;
     (function (Server) {
         var PayloadDecompressor = (function () {
             function PayloadDecompressor(contracts) {
-                console.log("CONTRACTS: ", contracts.PayloadContract);
-                this.PayloadContract = contracts.PayloadContract;
-                this.CursorContract = contracts.CursorContract;
-                this.LeaderboardEntryContract = contracts.LeaderboardEntryContract;
+                this.PayloadContract = contracts.payloadContract;
+                this.CursorContract = contracts.cursorContract;
+                this.LeaderboardEntryContract = contracts.leaderboardEntryContract;
             }
 
             PayloadDecompressor.prototype.DecompressCursor = function (cursor) {
+                // console.log(cursor[this.CursorContract.positionX], cursor[this.CursorContract.positionY]);
                 return {
-                    PositionX: cursor[this.CursorContract.PositionX],
-                    PositionY: cursor[this.CursorContract.PositionY],
-                    Name: cursor[this.CursorContract.Name],
-                    Wins: cursor[this.CursorContract.Wins],
-                    Id: cursor[this.CursorContract.Id],
-                    Disposed: !!cursor[this.CursorContract.Disposed]
+                    Position: new eg.Vector2d(cursor[this.CursorContract.positionX], cursor[this.CursorContract.positionY]),
+                    Name: cursor[this.CursorContract.name],
+                    Wins: cursor[this.CursorContract.wins],
+                    Id: cursor[this.CursorContract.id],
+                    Disposed: !!cursor[this.CursorContract.disposed]
                 }
             };
 
@@ -11226,7 +11281,6 @@ var Wanted;
             };
 
             PayloadDecompressor.prototype.DecompressPayload = function (data) {
-                console.log(data, this.PayloadContract);
                 return {
                     Cursors: data[this.PayloadContract.cursors],
                     LeaderboardPosition: data[this.PayloadContract.leaderboardPosition],
@@ -11242,7 +11296,6 @@ var Wanted;
                 for (i = 0; i < payload.Cursors.length; i++) {
                     payload.Cursors[i] = this.DecompressCursor(payload.Cursors[i]);
                 }
-                console.log(payload);
                 return payload;
             };
             return PayloadDecompressor;
@@ -11288,9 +11341,9 @@ var Wanted;
                 this.Connection.start().then(function () {
                     var userInformation = _this._connectionManager.PrepareRegistration();
                     _this.TryInitialize(userInformation, function (initialization) {
-                        initialization.UserInformation = userInformation;
+                        initialization.userInformation = userInformation;
                         console.log(initialization);
-                        _this._payloadDecompressor = new Server.PayloadDecompressor(initialization.CompressionContracts);
+                        _this._payloadDecompressor = new Server.PayloadDecompressor(initialization.compressionContracts);
 
                         result.resolve(initialization);
 
@@ -11327,16 +11380,20 @@ var Wanted;
             ServerAdapter.prototype.Wire = function () {
                 var _this = this;
                 this.Connection.on("d", function (payload) {
-                    console.log("Payload", payload);
-                    _this._payloadDecompressor.Decompress(payload);
+                    // console.log("Payload: ", payload);
+                    try {
+                        _this.OnPayload.Trigger(_this._payloadDecompressor.Decompress(payload));
+                    } catch(e) {
+                        console.log("error:", e)
+                    }
                 });
 
                 this.Connection.on("l", function (leaderboardUpdate) {
-                    _this._payloadDecompressor.DecompressLeaderboard(leaderboardUpdate);
+                    _this.OnLeaderboardUpdate.Trigger(_this._payloadDecompressor.DecompressLeaderboard(leaderboardUpdate));
                 });
 
                 this.Connection.on("disconnect", function () {
-                //     _this.OnForcedDisconnct.Trigger();
+                    _this.OnForcedDisconnect.Trigger();
                 });
 
                 this.Connection.on("controlTransferred", function () {
@@ -11344,7 +11401,7 @@ var Wanted;
                 });
 
                 this.Connection.on("pingBack", function () {
-                //     _this.OnPingRequest.Trigger();
+                    _this.OnPingRequest.Trigger();
                 });
 
                 this.Connection.on("mapSizeIncreased", function (size) {
@@ -11423,28 +11480,11 @@ var Wanted;
             //     }
             // });
 
-            this._cursorInputController = new Wanted.CursorInputController(input.Keyboard, function (direction, startMoving) {
+            this._cursorInputController = new Wanted.CursorInputController(input.Keyboard, input.Mouse, function (position, isMoving) {
                 var cursor = _this._cursorManager.GetCursor(_this.ControlledCursorId);
 
-                if (cursor && cursor.MovementController.Controllable && cursor.LifeController.Alive) {
-                    if (startMoving) {
-                        if (direction === "Boost") {
-                            _this.Invoke("registerAbilityStart", _this.LatencyResolver.TryRequestPing(), _this.NewAbilityCommand(direction, true));
-
-                            cursor.AbilityHandler.Activate(direction);
-                            // Don't want to trigger a server command if we're already moving in the direction
-                        } else if (!cursor.MovementController.IsMovingInDirection(direction)) {
-                            _this.Invoke("registerMoveStart", _this.LatencyResolver.TryRequestPing(), _this.NewMovementCommand(direction, true));
-
-                            cursor.MovementController.Move(direction, startMoving);
-                        }
-                    } else {
-                        if (cursor.MovementController.IsMovingInDirection(direction)) {
-                            _this.Invoke("registerMoveStop", _this.LatencyResolver.TryRequestPing(), _this.NewMovementCommand(direction, false));
-
-                            cursor.MovementController.Move(direction, startMoving);
-                        }
-                    }
+                if (cursor) {
+                    _this.Invoke("registerMove", position, isMoving, _this.LatencyResolver.TryRequestPing());
                 }
             }, function (clickMethod) {
                 var hubMethod = clickMethod.substr(0, 1).toUpperCase() + clickMethod.substring(1);
@@ -11455,49 +11495,30 @@ var Wanted;
         UserCursorManager.prototype.LoadPayload = function (payload) {
             var cursor = this._cursorManager.GetCursor(this.ControlledCursorId);
 
-            if (cursor) {
-                cursor.LevelManager.UpdateExperience(payload.Experience, payload.ExperienceToNextLevel);
-            }
+            // if (cursor) {
+            //     cursor.LevelManager.UpdateExperience(payload.Experience, payload.ExperienceToNextLevel);
+            // }
         };
 
         UserCursorManager.prototype.Update = function (gameTime) {
             var cursor = this._cursorManager.GetCursor(this.ControlledCursorId);
 
-            if (cursor) {
-                if (eg.TimeSpan.DateSpan(this._lastSync, gameTime.Now).Seconds > UserCursorManager.SYNC_INTERVAL.Seconds && cursor.LifeController.Alive) {
-                    this._lastSync = gameTime.Now;
-                    this._connection.invoke("syncMovement", { X: Math.round(cursor.MovementController.Position.X - cursor.Graphic.Size.HalfWidth), Y: Math.round(cursor.MovementController.Position.Y - cursor.Graphic.Size.HalfHeight) }, Math.roundTo(cursor.MovementController.Rotation * 57.2957795, 2), { X: Math.round(cursor.MovementController.Velocity.X), Y: Math.round(cursor.MovementController.Velocity.Y) });
-                }
+            // if (cursor) {
+            //     if (eg.TimeSpan.DateSpan(this._lastSync, gameTime.Now).Seconds > UserCursorManager.SYNC_INTERVAL.Seconds && cursor.LifeController.Alive) {
+            //         this._lastSync = gameTime.Now;
+            //         this._connection.invoke("syncMovement", { X: Math.round(cursor.MovementController.Position.X - cursor.Graphic.Size.HalfWidth), Y: Math.round(cursor.MovementController.Position.Y - cursor.Graphic.Size.HalfHeight) }, Math.roundTo(cursor.MovementController.Rotation * 57.2957795, 2), { X: Math.round(cursor.MovementController.Velocity.X), Y: Math.round(cursor.MovementController.Velocity.Y) });
+            //     }
 
-                this._userCameraController.Update(gameTime);
-            }
+            //     this._userCameraController.Update(gameTime);
+            // }
         };
 
-        UserCursorManager.prototype.Invoke = function (method, pingBack, command) {
+        UserCursorManager.prototype.Invoke = function (method, position, isMoving, pingBack) {
             var cursor = this._cursorManager.GetCursor(this.ControlledCursorId);
 
-            this._connection.invoke(method, command.Command, { X: Math.round(cursor.MovementController.Position.X - cursor.Graphic.Size.HalfWidth), Y: Math.round(cursor.MovementController.Position.Y - cursor.Graphic.Size.HalfHeight) }, Math.roundTo(cursor.MovementController.Rotation * 57.2957795, 2), { X: Math.round(cursor.MovementController.Velocity.X), Y: Math.round(cursor.MovementController.Velocity.Y) }, pingBack);
+            this._connection.invoke(method, isMoving, { X: Math.round(position.X - cursor.Graphic.Size.HalfWidth), Y: Math.round(position.Y - cursor.Graphic.Size.HalfHeight) }, pingBack);
         };
 
-        UserCursorManager.prototype.NewMovementCommand = function (direction, startMoving) {
-            var command = {
-                Command: direction,
-                Start: startMoving,
-                IsAbility: false
-            };
-
-            return command;
-        };
-
-        UserCursorManager.prototype.NewAbilityCommand = function (ability, startMoving) {
-            var command = {
-                Command: ability,
-                Start: startMoving,
-                IsAbility: true
-            };
-
-            return command;
-        };
         UserCursorManager.SYNC_INTERVAL = eg.TimeSpan.FromSeconds(1.5);
         return UserCursorManager;
     })();
@@ -11507,32 +11528,104 @@ var Wanted;
 
 var Wanted;
 (function (Wanted) {
+    var Cursor = (function (_super) {
+        __extends(Cursor, _super);
+        function Cursor(payload, contentManager) {
+            var _this = this;
+            this.Position = new eg.Vector2d(payload.Position.X, payload.Position.Y);
+            // this.LevelManager = new Wanted.CursorLevelManager(payload);
+
+            this.Graphic = new Wanted.CursorGraphic(payload.Name, payload.UserControlled, payload.Position, Cursor.SIZE, contentManager);
+
+            // Going to use the rectangle to "hold" all the other graphics
+            _super.call(this, this.Graphic.GetDrawBounds());
+
+            // this.MovementController = new Wanted.CursorMovementController(new Array(this.Bounds, this.Graphic));
+            // this.MovementController.UserControlled = payload.UserControlled;
+
+            // this.AbilityHandler = new Wanted.CursorAbilityHandler(this);
+            // this.AnimationHandler = new Wanted.CursorAnimationHandler(this, contentManager);
+
+            this.LoadPayload(payload, true);
+
+            // this.Graphic.RotateCursor(this.MovementController.Rotation);
+        }
+        Cursor.prototype.Update = function (gameTime) {
+            var _this = this;
+            // this.AbilityHandler.Update(gameTime);
+            // this.MovementController.Update(gameTime);
+            // this.AnimationHandler.Update(gameTime);
+            
+            var moveables = new Array(this.Bounds, this.Graphic);
+            for (var i = 0; i < moveables.length; i++) {
+                moveables[i].Position = _this.Position;
+            }
+
+            // Updates rotation
+            // this.Graphic.RotateCursor(this.MovementController.Rotation);
+            this.Graphic.Update(gameTime);
+        };
+
+        Cursor.prototype.LoadPayload = function (payload) {
+            this.Id = payload.Id;
+            this.Position.X = payload.Position.X;
+            this.Position.Y = payload.Position.Y;
+            // this.MovementController.LoadPayload(payload.MovementController, forceMovement);
+        };
+
+        Cursor.SIZE = new eg.Size2d(12);
+        return Cursor;
+    })(eg.Collision.Collidable);
+    Wanted.Cursor = Cursor;
+})(Wanted || (Wanted = {}));
+/*next file*/
+
+var Wanted;
+(function (Wanted) {
+    var CursorBodyGraphic = (function (_super) {
+        __extends(CursorBodyGraphic, _super);
+        function CursorBodyGraphic(size) {
+            _super.call(this, size.Width / 2, size.Height / 2, CursorBodyGraphic._bodyGraphics, size.Width, size.Height);
+        }
+
+        CursorBodyGraphic.LoadCursorBodies = // Made as a static so we don't have to construct the cursor bodies every time a new cursor is created.
+            function (contentManager) {
+                CursorBodyGraphic._bodyGraphics = contentManager.GetImage("Cursor");
+            };
+        return CursorBodyGraphic;
+    })(eg.Graphics.Sprite2d);
+    Wanted.CursorBodyGraphic = CursorBodyGraphic;
+})(Wanted || (Wanted = {}));
+/*next file*/
+
+var Wanted;
+(function (Wanted) {
     var CursorClickController = (function () {
-        function CursorClickController(keyboard, onClick) {
-            var autoClickHandle, ClickdAt = 0, singleClickMode = true, lastShot = 0;
+        function CursorClickController(mouse, onClick) {
+            var autoClickHandle, ClickedAt = 0, singleClickMode = true, lastShot = 0;
 
-            keyboard.OnCommandDown("space", function () {
-                var timeSinceClickd;
+            mouse.OnDown.Bind((e) => {
+                var timeSinceClicked;
 
-                ClickdAt = new Date().getTime();
+                ClickedAt = new Date().getTime();
 
                 if (singleClickMode) {
-                    timeSinceClickd = ClickdAt - lastShot;
+                    timeSinceClicked = ClickedAt - lastShot;
 
-                    if (timeSinceClickd > CursorClickController.MIN_Click_RATE.Milliseconds) {
-                        lastShot = ClickdAt;
+                    if (timeSinceClicked > CursorClickController.MIN_CLICK_RATE.Milliseconds) {
+                        lastShot = ClickedAt;
                         onClick("Click");
                     }
 
                     autoClickHandle = setTimeout(function () {
                         singleClickMode = false;
                         onClick("StartClick");
-                    }, CursorClickController.MIN_Click_RATE.Milliseconds);
+                    }, CursorClickController.MIN_CLICK_RATE.Milliseconds);
                 } else {
                     onClick("StartClick");
                 }
             });
-            keyboard.OnCommandUp("space", function () {
+            mouse.OnUp.Bind((e) => {
                 var timeClickReleased;
 
                 clearTimeout(autoClickHandle);
@@ -11543,7 +11636,7 @@ var Wanted;
                     onClick("StopClick");
                 }
 
-                singleClickMode = timeClickReleased - ClickdAt < CursorClickController.MIN_Click_RATE.Milliseconds;
+                singleClickMode = timeClickReleased - ClickedAt < CursorClickController.MIN_CLICK_RATE.Milliseconds;
             });
         }
         return CursorClickController;
@@ -11554,15 +11647,71 @@ var Wanted;
 
 var Wanted;
 (function (Wanted) {
+    var CursorGraphic = (function (_super) {
+        __extends(CursorGraphic, _super);
+        function CursorGraphic(name, userControlled, position, size, contentManager) {
+            // The Graphic color is transparent because all graphics that represent a cursor will be added as a child.
+            _super.call(this, position.X, position.Y, size.Width, size.Height, eg.Graphics.Color.Transparent);
+
+            // this._statusGraphic = new Wanted.CursorStatusTextGraphic(levelManager, lifeController);
+            // this._damageGraphic = new Wanted.CursorDamageGraphic(lifeController, contentManager);
+
+            this.Body = new Wanted.CursorBodyGraphic(size);
+            this.Body.Rotation = 0;
+
+            this.AddChild(this.Body);
+            // this.AddChild(this._statusGraphic);
+            // this.Body.AddChild(this._damageGraphic);
+
+            if (!userControlled) {
+                // this._lifeBar = new Wanted.CursorLifeGraphic(lifeController);
+                this._nameGraphic = new Wanted.CursorNameGraphic(name);
+
+                // this.AddChild(this._lifeBar);
+                this.AddChild(this._nameGraphic);
+            } else {
+                // this.HideCursor();
+            }
+        }
+        CursorGraphic.prototype.Status = function (text, size, color, fadeDuration, reverseDirection) {
+            // this._statusGraphic.Status(text, size, color, fadeDuration, reverseDirection);
+        };
+
+        CursorGraphic.prototype.AddChildToCursor = function (child) {
+            this.Body.AddChild(child);
+        };
+
+        CursorGraphic.prototype.HideCursor = function () {
+            if (this._nameGraphic) {
+                this._nameGraphic.Visible = false;
+            }
+
+            this.Body.Visible = false;
+        };
+
+        CursorGraphic.prototype.Update = function (gameTime) {
+            // this._statusGraphic.Update(gameTime);
+        };
+        return CursorGraphic;
+    })(eg.Graphics.Rectangle);
+    Wanted.CursorGraphic = CursorGraphic;
+})(Wanted || (Wanted = {}));
+/*next file*/
+
+var eg = EndGate;
+
+var Wanted;
+(function (Wanted) {
     var CursorInputController = (function () {
-        function CursorInputController(_keyboard, _onMove, _onClick) {
+        function CursorInputController(_keyboard, _mouse, _onMove, _onClick) {
             var _this = this;
             this._keyboard = _keyboard;
+            this._mouse = _mouse;
             this._onMove = _onMove;
             this._onClick = _onClick;
 
-            this.BindKeys(["space"], "OnCommandDown", "Action1", true);
-            this.BindKeys(["space"], "OnCommandUp", "Action1", false);
+            // this.BindKeys(["space"], "OnCommandDown", "Action1", true);
+            // this.BindKeys(["space"], "OnCommandUp", "Action1", false);
 
             // this._keyboard.OnCommandUp("space", function () {
             //     var now = new Date();
@@ -11574,19 +11723,27 @@ var Wanted;
             //     }
             // });
 
-            this._clickController = new Wanted.CursorClickController(this._keyboard, this._onClick);
+            this._mouse.OnMove.Bind(function(e) {
+                var oldPosition = new eg.Vector2d(0, 0);
+                _this._onMove(e.Position, oldPosition.X != e.Position.X || oldPosition.Y != e.Position.Y);
+                oldPosition = e.Position;
+            });
+
+            this._clickController = new Wanted.CursorClickController(this._mouse, this._onClick);
         }
-        CursorInputController.prototype.BindKeys = function (keyList, bindingAction, direction, startMoving) {
-            var _this = this;
-            for (var i = 0; i < keyList.length; i++) {
-                this._keyboard[bindingAction](keyList[i], function () {
-                    if (_this._directions[direction] !== startMoving) {
-                        _this._directions[direction] = startMoving;
-                        _this._onMove(direction, startMoving);
-                    }
-                });
-            }
-        };
+
+        // CursorInputController.prototype.BindKeys = function (keyList, bindingAction, direction, startMoving) {
+        //     var _this = this;
+        //     for (var i = 0; i < keyList.length; i++) {
+        //         this._keyboard[bindingAction](keyList[i], function () {
+        //             if (_this._directions[direction] !== startMoving) {
+        //                 _this._directions[direction] = startMoving;
+        //                 _this._onMove(direction, startMoving);
+        //             }
+        //         });
+        //     }
+        // };
+
         CursorInputController.DOUBLE_TAP_AFTER = eg.TimeSpan.FromMilliseconds(350);
         return CursorInputController;
     })();
@@ -11621,10 +11778,11 @@ var Wanted;
         };
 
         CursorManager.prototype.LoadPayload = function (payload) {
-            var _this = this;
-            var cursorPayload = payload.Cursors, cursor;
+            let _this = this;
+            let cursorPayload = payload.Cursors;
+            let cursor;
 
-            for (var i = 0; i < cursorPayload.length; i++) {
+            for (let i = 0; i < cursorPayload.length; i++) {
                 cursor = cursorPayload[i];
 
                 if (!this._cursors[cursor.Id]) {
@@ -11638,16 +11796,12 @@ var Wanted;
                     // this._collisionManager.Monitor(this._cursors[cursor.Id]);
                     this._scene.Add(this._cursors[cursor.Id].Graphic);
 
-                    // this._cursors[cursor.Id].OnDisposed.Bind(function (cursor) {
-                    //     delete _this._cursors[(cursor).Id];
-                    // });
+                    this._cursors[cursor.Id].OnDisposed.Bind(function (cursor) {
+                        delete _this._cursors[(cursor).Id];
+                    });
                 } else {
                     this._cursors[cursor.Id].LoadPayload(cursor);
                 }
-
-                // if (cursor.Disposed) {
-                //     this._cursors[cursor.Id].Destroy(!cursor.LifeController.Alive);
-                // }
             }
 
             this.UserCursorManager.LoadPayload(payload);
@@ -11660,15 +11814,41 @@ var Wanted;
 
             this.UserCursorManager.Update(gameTime);
 
-            for (var id in this._cursors) {
-                if (!this._cursors[id].Bounds.IntersectsRectangle(this._viewport)) {
-                    this._cursors[id].Destroy();
-                }
-            }
+            // for (var id in this._cursors) {
+            //     if (!this._cursors[id].Bounds.IntersectsRectangle(this._viewport)) {
+            //         this._cursors[id].Destroy();
+            //     }
+            // }
         };
         return CursorManager;
     })();
     Wanted.CursorManager = CursorManager;
+})(Wanted || (Wanted = {}));
+/*next file*/
+
+
+/*next file*/
+
+var Wanted;
+(function (Wanted) {
+    var CursorNameGraphic = (function (_super) {
+        __extends(CursorNameGraphic, _super);
+        function CursorNameGraphic(name) {
+            _super.call(this, CursorNameGraphic.X_OFFSET, Wanted.Cursor.SIZE.HalfHeight + CursorNameGraphic.Y_OFFSET, name, CursorNameGraphic.NAME_COLOR);
+
+            this.FontSettings.FontSize = CursorNameGraphic.FONT_SIZE;
+            this.FontSettings.FontFamily = eg.Graphics.Assets.FontFamily.Arial;
+            this.FontSettings.FontWeight = "normal";
+        }
+
+        CursorNameGraphic.FONT_SIZE = "10px";
+        CursorNameGraphic.X_OFFSET = 30;
+        CursorNameGraphic.Y_OFFSET = 8;
+        CursorNameGraphic.NAME_COLOR = eg.Graphics.Color.Black;
+
+        return CursorNameGraphic;
+    })(eg.Graphics.Text2d);
+    Wanted.CursorNameGraphic = CursorNameGraphic;
 })(Wanted || (Wanted = {}));
 /*next file*/
 
@@ -11711,17 +11891,17 @@ var Wanted;
             this._cursorStats = $("#StatisticHolder");
             this._logout = $("#logout");
             this._myCursorId = initialization.CursorId;
-            // this._gameHUDHeight = this._gameHUD.height();
+            this._gameHUDHeight = this._gameHUD.height();
             // this._cursorStatMonitor = new Wanted.CursorStatMonitor();
             // this._cursorHealthMonitor = new Wanted.HealthMonitor();
             // this._cursorExperienceMonitor = new Wanted.ExperienceMonitor();
             // this._rankingsManager = new Wanted.RankingsManager();
             // this._environmentMonitor = new Wanted.EnvironmentMonitor(areaRenderer, this._cursorManager.UserCursorManager);
-            // this._leaderboardManager = new Wanted.LeaderboardManager(this._myCursorId, keyboard, serverAdapter);
+            this._leaderboardManager = new Wanted.LeaderboardManager(this._myCursorId, keyboard, serverAdapter);
             // this._deathScreen = new Wanted.DeathScreen();
             // this._notificationManager = new Wanted.NotificationManager(serverAdapter);
-            // this._userInformationManager = new Wanted.UserInformationManager(initialization.UserInformation);
-            // this._chat = new Wanted.Chat(initialization.UserInformation, serverAdapter);
+            this._userInformationManager = new Wanted.UserInformationManager(initialization.userInformation);
+            // this._chat = new Wanted.Chat(initialization.userInformation, serverAdapter);
 
             this._logout.click(function () {
                 // Clear cookies
@@ -11761,21 +11941,21 @@ var Wanted;
         };
 
         HUDManager.prototype.LoadPayload = function (payload) {
-            this._rankingsManager.LoadPayload(payload);
-            this._environmentMonitor.LoadPayload(payload);
-            this._deathScreen.LoadPayload(payload);
-            this._notificationManager.LoadPayload(payload);
+            // this._rankingsManager.LoadPayload(payload);
+            // this._environmentMonitor.LoadPayload(payload);
+            // this._deathScreen.LoadPayload(payload);
+            // this._notificationManager.LoadPayload(payload);
         };
 
         HUDManager.prototype.Update = function (gameTime) {
             var cursor = this._cursorManager.GetCursor(this._myCursorId);
 
             if (cursor) {
-                this._cursorStatMonitor.Update(cursor);
+                // this._cursorStatMonitor.Update(cursor);
                 // this._cursorHealthMonitor.Update(cursor);
                 // this._cursorExperienceMonitor.Update(cursor);
-                this._environmentMonitor.Update(cursor);
-                this._rankingsManager.Update(cursor);
+                // this._environmentMonitor.Update(cursor);
+                // this._rankingsManager.Update(cursor);
             }
         };
         return HUDManager;
@@ -11884,3 +12064,21 @@ var Wanted;
 })(Wanted || (Wanted = {}));
 /*next file*/
 
+
+/*next file*/
+
+var Wanted;
+(function (Wanted) {
+    var UserInformationManager = (function () {
+        function UserInformationManager(userInformation) {
+            this._displayName = $("#DisplayName");
+            this._displayNameLB = $("#DisplayNameLB");
+            this._you = $("#You");
+            this._youLB = $("#YouLB");
+            this._displayName.text(userInformation.Name);
+            this._displayNameLB.text(userInformation.Name);
+        }
+        return UserInformationManager;
+    })();
+    Wanted.UserInformationManager = UserInformationManager;
+})(Wanted || (Wanted = {}));

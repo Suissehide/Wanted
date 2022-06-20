@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.SignalR;
+using System.Numerics;
 using Wanted.Application;
 using Wanted.Application.CursorEntity;
 
@@ -46,6 +47,110 @@ namespace Wanted.Hubs
             }
 
             return null;
+        }
+
+        /// <summary>
+        /// Registers the movement on a client. Fires when the client move mouse.
+        /// </summary>
+        public async Task registerMove(bool isMoving, Vector2 at, bool pingBack)
+        {
+            if (_game.UserHandler.UserExistsAndReady(Context.ConnectionId))
+            {
+                try
+                {
+                    if (pingBack)
+                    {
+                        await Clients.Client(Context.ConnectionId).SendAsync("pingBack");
+                    }
+
+                    Cursor cursor = _game.UserHandler.GetUserCursor(Context.ConnectionId);
+                    cursor.RegisterMove(isMoving, at);
+                }
+                catch (Exception e)
+                {
+                    _logger.LogError("registerMoveStart", e);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Called when a player click
+        /// </summary>
+        public double click()
+        {
+            try
+            {
+                if (_game.UserHandler.UserExistsAndReady(Context.ConnectionId))
+                {
+
+                    Cursor cursor = _game.UserHandler.GetUserCursor(Context.ConnectionId);
+
+                    /*
+                    if (cursor.Controllable.Value)
+                    {
+                        cursor.WeaponController.Fire(DateTime.UtcNow);
+                    }
+                    return cursor.WeaponController.Energy;
+                    */
+
+                }
+                throw new Exception("Could not find user when clicking.");
+
+            }
+            catch (Exception e)
+            {
+                _logger.LogError("click", e);
+            }
+
+            return 0;
+        }
+
+        /// <summary>
+        /// Called when a cursor starts firing a stream of bullet at the maximum possible rate
+        /// </summary>
+        public void startClick()
+        {
+            if (_game.UserHandler.UserExistsAndReady(Context.ConnectionId))
+            {
+                try
+                {
+                    Cursor cursor = _game.UserHandler.GetUserCursor(Context.ConnectionId);
+
+                    /*
+                    if (cursor.Controllable.Value)
+                    {
+                        cursor.WeaponController.AutoFire = true;
+                    }
+                    */
+                }
+                catch (Exception e)
+                {
+                    _logger.LogError("startClick", e);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Called when a cursor stops firing a stream of bullet
+        /// </summary>
+        public double stopClick()
+        {
+            if (_game.UserHandler.UserExistsAndReady(Context.ConnectionId))
+            {
+                try
+                {
+                    Cursor cursor = _game.UserHandler.GetUserCursor(Context.ConnectionId);
+
+                    //cursor.WeaponController.AutoFire = false;
+                    //return cursor.WeaponController.Energy;
+                }
+                catch (Exception e)
+                {
+                    _logger.LogError("stopClick", e);
+                }
+            }
+
+            return 0;
         }
 
         public async Task readyForLeaderboardPayloads()
