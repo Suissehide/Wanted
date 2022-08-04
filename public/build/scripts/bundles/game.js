@@ -298,7 +298,7 @@ Number.prototype.Clone = function () {
             * Gets the radius that encompasses the two dimensional size of this Size2d.
             */
                 function () {
-                    return .5 * Math.sqrt(this.Width * this.Width + this.Height * this.Height);
+                    return 0.5 * Math.sqrt(this.Width * this.Width + this.Height * this.Height);
                 },
             enumerable: true,
             configurable: true
@@ -1825,8 +1825,8 @@ var GameRunnerInstance = new EndGate._.GameRunner();
                     function QuadTreeNode(position, size, minNodeSize, parent) {
                         _super.call(this, new EndGate.Bounds.BoundingRectangle(position, size));
                         this._minNodeSize = minNodeSize;
-                        this._children = new Array();
-                        this.Contents = new Array();
+                        this._children = [];
+                        this.Contents = [];
                         this.Parent = parent;
                         this._partitioned = false;
                     }
@@ -1887,7 +1887,7 @@ var GameRunnerInstance = new EndGate._.GameRunner();
                     };
 
                     QuadTreeNode.prototype.Partition = function () {
-                        var partitionedSize = new EndGate.Size2d(Math.round((this.Bounds).Size.Width * .5)), boundsPosition = this.Bounds.Position;
+                        var partitionedSize = new EndGate.Size2d(Math.round((this.Bounds).Size.Width * 0.5)), boundsPosition = this.Bounds.Position;
 
                         this._partitioned = true;
 
@@ -1895,10 +1895,10 @@ var GameRunnerInstance = new EndGate._.GameRunner();
                             return;
                         }
 
-                        this._children.push(new QuadTreeNode(boundsPosition.Subtract(partitionedSize.Multiply(.5)), partitionedSize, this._minNodeSize, this));
+                        this._children.push(new QuadTreeNode(boundsPosition.Subtract(partitionedSize.Multiply(0.5)), partitionedSize, this._minNodeSize, this));
                         this._children.push(new QuadTreeNode(new EndGate.Vector2d(boundsPosition.X + partitionedSize.Width / 2, boundsPosition.Y - partitionedSize.Height / 2), partitionedSize, this._minNodeSize, this));
                         this._children.push(new QuadTreeNode(new EndGate.Vector2d(boundsPosition.X - partitionedSize.Width / 2, boundsPosition.Y + partitionedSize.Height / 2), partitionedSize, this._minNodeSize, this));
-                        this._children.push(new QuadTreeNode(boundsPosition.Add(partitionedSize.Multiply(.5)), partitionedSize, this._minNodeSize, this));
+                        this._children.push(new QuadTreeNode(boundsPosition.Add(partitionedSize.Multiply(0.5)), partitionedSize, this._minNodeSize, this));
                     };
 
                     QuadTreeNode.prototype.Insert = function (obj) {
@@ -1928,15 +1928,15 @@ var GameRunnerInstance = new EndGate._.GameRunner();
                     };
 
                     QuadTreeNode.prototype.Query = function (queryArea) {
-                        var results = new Array(), child;
+                        var results = [], child;
 
-                        for (var i = 0; i < this.Contents.length; i++) {
+                        for (let i = 0; i < this.Contents.length; i++) {
                             if (queryArea.Intersects(this.Contents[i].Bounds)) {
                                 results.push(this.Contents[i]);
                             }
                         }
 
-                        for (var i = 0; i < this._children.length; i++) {
+                        for (let i = 0; i < this._children.length; i++) {
                             child = this._children[i];
 
                             if (child.Bounds.Contains(queryArea)) {
@@ -1966,7 +1966,7 @@ var GameRunnerInstance = new EndGate._.GameRunner();
                     };
 
                     QuadTreeNode.prototype.GetSubTreeContents = function () {
-                        var results = new Array();
+                        var results = [];
 
                         for (var i = 0; i < this._children.length; i++) {
                             results = results.concat(this._children[i].GetSubTreeContents());
@@ -2288,13 +2288,13 @@ var GameRunnerInstance = new EndGate._.GameRunner();
             * @param gameTime The current game time object.
             */
             CollisionManager.prototype.Update = function (gameTime) {
-                var collidable, hash, candidates, cacheMap = {}, colliding = new Array();
+                var collidable, hash, candidates, cacheMap = {}, colliding = [];
 
                 if (this._enabled) {
                     // Update the structure of the quad tree, this accounts for moving objects
                     this._quadTree.Update(gameTime);
 
-                    for (var i = 0; i < this._nonStaticCollidables.length; i++) {
+                    for (let i = 0; i < this._nonStaticCollidables.length; i++) {
                         collidable = this._nonStaticCollidables[i];
                         candidates = this._quadTree.CollisionCandidates(collidable);
 
@@ -2305,7 +2305,7 @@ var GameRunnerInstance = new EndGate._.GameRunner();
                         }
                     }
 
-                    for (var i = 0; i < colliding.length; i++) {
+                    for (let i = 0; i < colliding.length; i++) {
                         hash = this.HashIds(colliding[i][0], colliding[i][1]);
 
                         if (!cacheMap[hash]) {
@@ -2362,10 +2362,10 @@ var GameRunnerInstance = new EndGate._.GameRunner();
                     }
                     Object.defineProperty(Graphic2dState.prototype, "StrokeStyle", {
                         get: function () {
-                            return this._cachedState["strokeStyle"];
+                            return this._cachedState.strokeStyle;
                         },
                         set: function (value) {
-                            this._cachedState["strokeStyle"] = value;
+                            this._cachedState.strokeStyle = value;
                         },
                         enumerable: true,
                         configurable: true
@@ -2373,10 +2373,10 @@ var GameRunnerInstance = new EndGate._.GameRunner();
 
                     Object.defineProperty(Graphic2dState.prototype, "FillStyle", {
                         get: function () {
-                            return this._cachedState["fillStyle"];
+                            return this._cachedState.fillStyle;
                         },
                         set: function (value) {
-                            this._cachedState["fillStyle"] = value;
+                            this._cachedState.fillStyle = value;
                         },
                         enumerable: true,
                         configurable: true
@@ -2384,10 +2384,10 @@ var GameRunnerInstance = new EndGate._.GameRunner();
 
                     Object.defineProperty(Graphic2dState.prototype, "GlobalAlpha", {
                         get: function () {
-                            return this._cachedState["globalAlpha"];
+                            return this._cachedState.globalAlpha;
                         },
                         set: function (value) {
-                            this._cachedState["globalAlpha"] = value;
+                            this._cachedState.globalAlpha = value;
                         },
                         enumerable: true,
                         configurable: true
@@ -2395,10 +2395,10 @@ var GameRunnerInstance = new EndGate._.GameRunner();
 
                     Object.defineProperty(Graphic2dState.prototype, "LineWidth", {
                         get: function () {
-                            return this._cachedState["lineWidth"];
+                            return this._cachedState.lineWidth;
                         },
                         set: function (value) {
-                            this._cachedState["lineWidth"] = value;
+                            this._cachedState.lineWidth = value;
                         },
                         enumerable: true,
                         configurable: true
@@ -2406,10 +2406,10 @@ var GameRunnerInstance = new EndGate._.GameRunner();
 
                     Object.defineProperty(Graphic2dState.prototype, "LineCap", {
                         get: function () {
-                            return this._cachedState["lineCap"];
+                            return this._cachedState.lineCap;
                         },
                         set: function (value) {
-                            this._cachedState["lineCap"] = value;
+                            this._cachedState.lineCap = value;
                         },
                         enumerable: true,
                         configurable: true
@@ -2417,10 +2417,10 @@ var GameRunnerInstance = new EndGate._.GameRunner();
 
                     Object.defineProperty(Graphic2dState.prototype, "LineJoin", {
                         get: function () {
-                            return this._cachedState["lineJoin"];
+                            return this._cachedState.lineJoin;
                         },
                         set: function (value) {
-                            this._cachedState["lineJoin"] = value;
+                            this._cachedState.lineJoin = value;
                         },
                         enumerable: true,
                         configurable: true
@@ -2428,10 +2428,10 @@ var GameRunnerInstance = new EndGate._.GameRunner();
 
                     Object.defineProperty(Graphic2dState.prototype, "MiterLimit", {
                         get: function () {
-                            return this._cachedState["miterLimit"];
+                            return this._cachedState.miterLimit;
                         },
                         set: function (value) {
-                            this._cachedState["miterLimit"] = value;
+                            this._cachedState.miterLimit = value;
                         },
                         enumerable: true,
                         configurable: true
@@ -2439,10 +2439,10 @@ var GameRunnerInstance = new EndGate._.GameRunner();
 
                     Object.defineProperty(Graphic2dState.prototype, "ShadowOffsetX", {
                         get: function () {
-                            return this._cachedState["shadowOffsetX"];
+                            return this._cachedState.shadowOffsetX;
                         },
                         set: function (value) {
-                            this._cachedState["shadowOffsetX"] = value;
+                            this._cachedState.shadowOffsetX = value;
                         },
                         enumerable: true,
                         configurable: true
@@ -2450,10 +2450,10 @@ var GameRunnerInstance = new EndGate._.GameRunner();
 
                     Object.defineProperty(Graphic2dState.prototype, "ShadowOffsetY", {
                         get: function () {
-                            return this._cachedState["shadowOffsetY"];
+                            return this._cachedState.shadowOffsetY;
                         },
                         set: function (value) {
-                            this._cachedState["shadowOffsetY"] = value;
+                            this._cachedState.shadowOffsetY = value;
                         },
                         enumerable: true,
                         configurable: true
@@ -2461,10 +2461,10 @@ var GameRunnerInstance = new EndGate._.GameRunner();
 
                     Object.defineProperty(Graphic2dState.prototype, "ShadowBlur", {
                         get: function () {
-                            return this._cachedState["shadowBlur"];
+                            return this._cachedState.shadowBlur;
                         },
                         set: function (value) {
-                            this._cachedState["shadowBlur"] = value;
+                            this._cachedState.shadowBlur = value;
                         },
                         enumerable: true,
                         configurable: true
@@ -2472,10 +2472,10 @@ var GameRunnerInstance = new EndGate._.GameRunner();
 
                     Object.defineProperty(Graphic2dState.prototype, "ShadowColor", {
                         get: function () {
-                            return this._cachedState["shadowColor"];
+                            return this._cachedState.shadowColor;
                         },
                         set: function (value) {
-                            this._cachedState["shadowColor"] = value;
+                            this._cachedState.shadowColor = value;
                         },
                         enumerable: true,
                         configurable: true
@@ -2483,10 +2483,10 @@ var GameRunnerInstance = new EndGate._.GameRunner();
 
                     Object.defineProperty(Graphic2dState.prototype, "GlobalCompositeOperation", {
                         get: function () {
-                            return this._cachedState["globalCompositeOperation"];
+                            return this._cachedState.globalCompositeOperation;
                         },
                         set: function (value) {
-                            this._cachedState["globalCompositeOperation"] = value;
+                            this._cachedState.globalCompositeOperation = value;
                         },
                         enumerable: true,
                         configurable: true
@@ -2494,10 +2494,10 @@ var GameRunnerInstance = new EndGate._.GameRunner();
 
                     Object.defineProperty(Graphic2dState.prototype, "Font", {
                         get: function () {
-                            return this._cachedState["font"];
+                            return this._cachedState.font;
                         },
                         set: function (value) {
-                            this._cachedState["font"] = value;
+                            this._cachedState.font = value;
                         },
                         enumerable: true,
                         configurable: true
@@ -2505,10 +2505,10 @@ var GameRunnerInstance = new EndGate._.GameRunner();
 
                     Object.defineProperty(Graphic2dState.prototype, "TextAlign", {
                         get: function () {
-                            return this._cachedState["textAlign"];
+                            return this._cachedState.textAlign;
                         },
                         set: function (value) {
-                            this._cachedState["textAlign"] = value;
+                            this._cachedState.textAlign = value;
                         },
                         enumerable: true,
                         configurable: true
@@ -2516,10 +2516,10 @@ var GameRunnerInstance = new EndGate._.GameRunner();
 
                     Object.defineProperty(Graphic2dState.prototype, "TextBaseline", {
                         get: function () {
-                            return this._cachedState["textBaseline"];
+                            return this._cachedState.textBaseline;
                         },
                         set: function (value) {
-                            this._cachedState["textBaseline"] = value;
+                            this._cachedState.textBaseline = value;
                         },
                         enumerable: true,
                         configurable: true
@@ -2574,7 +2574,7 @@ var GameRunnerInstance = new EndGate._.GameRunner();
                     function () {
                         var position = this.Position, node = this;
 
-                        while (node = node.Parent) {
+                        while (node == node.Parent) {
                             position = position.Add(node.Position);
                         }
 
@@ -2779,7 +2779,7 @@ var GameRunnerInstance = new EndGate._.GameRunner();
             * @param position The absolute position to convert.  0 position represents the top or left hand side of the camera.
             */
             Camera2d.prototype.ToCameraRelative = function (position) {
-                var scaledTopLeft = this.Position.Subtract(this.Size.Multiply(this._GetDistanceScale() * .5));
+                var scaledTopLeft = this.Position.Subtract(this.Size.Multiply(this._GetDistanceScale() * 0.5));
                 return scaledTopLeft.Add(position.Multiply(this._GetDistanceScale()));
             };
 
@@ -3891,19 +3891,19 @@ var GameRunnerInstance = new EndGate._.GameRunner();
                     this._onKeyPress.Dispose();
                     this._onKeyUp.Dispose();
 
-                    for (var command in this._onDownCommands) {
+                    for (let command in this._onDownCommands) {
                         this._onDownCommands[command].Dispose();
                     }
 
                     this._onDownCommands = null;
 
-                    for (var command in this._onUpCommands) {
+                    for (let command in this._onUpCommands) {
                         this._onUpCommands[command].Dispose();
                     }
 
                     this._onUpCommands = null;
 
-                    for (var command in this._onPressCommands) {
+                    for (let command in this._onPressCommands) {
                         this._onPressCommands[command].Dispose();
                     }
 
@@ -7169,7 +7169,6 @@ var GameRunnerInstance = new EndGate._.GameRunner();
                 FontFamily[FontFamily["Verdana"] = 22] = "Verdana";
             })(Assets.FontFamily || (Assets.FontFamily = {}));
             var FontFamily = Assets.FontFamily;
-            ;
         })(Graphics.Assets || (Graphics.Assets = {}));
         var Assets = Graphics.Assets;
     })(EndGate.Graphics || (EndGate.Graphics = {}));
@@ -7189,7 +7188,6 @@ var GameRunnerInstance = new EndGate._.GameRunner();
                 FontVariant[FontVariant["SmallCaps"] = 1] = "SmallCaps";
             })(Assets.FontVariant || (Assets.FontVariant = {}));
             var FontVariant = Assets.FontVariant;
-            ;
         })(Graphics.Assets || (Graphics.Assets = {}));
         var Assets = Graphics.Assets;
     })(EndGate.Graphics || (EndGate.Graphics = {}));
@@ -7247,11 +7245,11 @@ var GameRunnerInstance = new EndGate._.GameRunner();
                     * Gets or sets the current font size.  Values can be things such as 20px.
                     */
                         function () {
-                            return this._cachedState["fontSize"];
+                            return this._cachedState.fontSize;
                         },
                     set: function (size) {
                         this._refreshCache = true;
-                        this._cachedState["fontSize"] = size;
+                        this._cachedState.fontSize = size;
                     },
                     enumerable: true,
                     configurable: true
@@ -7262,11 +7260,11 @@ var GameRunnerInstance = new EndGate._.GameRunner();
                     * Gets or sets the font family.
                     */
                         function () {
-                            return this._cachedState["fontFamily"];
+                            return this._cachedState.fontFamily;
                         },
                     set: function (family) {
                         this._refreshCache = true;
-                        this._cachedState["fontFamily"] = family;
+                        this._cachedState.fontFamily = family;
                     },
                     enumerable: true,
                     configurable: true
@@ -7277,11 +7275,11 @@ var GameRunnerInstance = new EndGate._.GameRunner();
                     * Gets or sets the font variant.
                     */
                         function () {
-                            return this._cachedState["fontVariant"];
+                            return this._cachedState.fontVariant;
                         },
                     set: function (variant) {
                         this._refreshCache = true;
-                        this._cachedState["fontVariant"] = variant;
+                        this._cachedState.fontVariant = variant;
                     },
                     enumerable: true,
                     configurable: true
@@ -7292,11 +7290,11 @@ var GameRunnerInstance = new EndGate._.GameRunner();
                     * Gets or sets the current font weight.
                     */
                         function () {
-                            return this._cachedState["fontWeight"];
+                            return this._cachedState.fontWeight;
                         },
                     set: function (weight) {
                         this._refreshCache = true;
-                        this._cachedState["fontWeight"] = weight;
+                        this._cachedState.fontWeight = weight;
                     },
                     enumerable: true,
                     configurable: true
@@ -7307,11 +7305,11 @@ var GameRunnerInstance = new EndGate._.GameRunner();
                     * Gets or sets the current font style.
                     */
                         function () {
-                            return this._cachedState["fontStyle"];
+                            return this._cachedState.fontStyle;
                         },
                     set: function (style) {
                         this._refreshCache = true;
-                        this._cachedState["fontStyle"] = style;
+                        this._cachedState.fontStyle = style;
                     },
                     enumerable: true,
                     configurable: true
@@ -7321,10 +7319,10 @@ var GameRunnerInstance = new EndGate._.GameRunner();
                     var font;
 
                     if (this._refreshCache) {
-                        font = this._cachedState["fontWeight"] + " " + Assets.FontStyle[this._cachedState["fontStyle"]].replace("Normal", "") + " " + Assets.FontVariant[this._cachedState["fontVariant"]].replace("Normal", "") + " " + this._cachedState["fontSize"];
+                        font = this._cachedState.fontWeight + " " + Assets.FontStyle[this._cachedState.fontStyle].replace("Normal", "") + " " + Assets.FontVariant[this._cachedState.fontVariant].replace("Normal", "") + " " + this._cachedState.fontSize;
 
-                        if (this._cachedState["fontFamily"] !== undefined) {
-                            font += " " + Assets.FontFamily[this._cachedState["fontFamily"]];
+                        if (this._cachedState.fontFamily !== undefined) {
+                            font += " " + Assets.FontFamily[this._cachedState.fontFamily];
                         }
 
                         this._cachedFont = font.replace(/^\s\s*/, '').replace(/\s\s*$/, '');
@@ -8461,7 +8459,7 @@ var GameRunnerInstance = new EndGate._.GameRunner();
             };
 
             Grid.prototype.BuildGridLines = function () {
-                var halfSize = this._size.Multiply(.5), topLeft = new EndGate.Vector2d(-halfSize.Width, -halfSize.Height), bottomRight = new EndGate.Vector2d(halfSize.Width, halfSize.Height);
+                var halfSize = this._size.Multiply(0.5), topLeft = new EndGate.Vector2d(-halfSize.Width, -halfSize.Height), bottomRight = new EndGate.Vector2d(halfSize.Width, halfSize.Height);
 
                 for (var i = 0; i < this._rows; i++) {
                     this._gridLines.push(new Graphics.Line2d(topLeft.X, topLeft.Y + i * this._tileSize.Height, bottomRight.X, topLeft.Y + i * this._tileSize.Height, 1, this._gridLineColor));
@@ -9001,7 +8999,7 @@ function asyncLoop(action, count, onComplete) {
                         }, function (tilesetSources) {
                             // Triggered once all the sources have completed loading
                             // All the tiles extracted represent our resource list
-                            var resources = _this.ExtractTilesetTiles(data.tilesets, tilesetSources, propertyHooks), mappings, layers = new Array(), layerPercentValue = (1 - OrthogonalLoader._imagePercentMax) / data.layers.length;
+                            var resources = _this.ExtractTilesetTiles(data.tilesets, tilesetSources, propertyHooks), mappings, layers = [], layerPercentValue = (1 - OrthogonalLoader._imagePercentMax) / data.layers.length;
 
                             percent = OrthogonalLoader._imagePercentMax;
 
@@ -9057,20 +9055,20 @@ function asyncLoop(action, count, onComplete) {
                     };
 
                     OrthogonalLoader.prototype.ExtractTilesetTiles = function (tilesets, tilesetSources, propertyHooks) {
-                        var tilesetTiles = new Array(), resourceHooks = new Array(), sources, index;
+                        var tilesetTiles = [], resourceHooks = [], sources, index;
 
                         tilesets.sort(function (a, b) {
                             return a.firstgid - b.firstgid;
                         });
 
-                        for (var i = 0; i < tilesets.length; i++) {
+                        for (let i = 0; i < tilesets.length; i++) {
                             sources = EndGate.Graphics.SquareTileMap.ExtractTiles(tilesetSources[tilesets[i].name], tilesets[i].tilewidth, tilesets[i].tileheight);
 
-                            for (var property in tilesets[i].properties) {
+                            for (let property in tilesets[i].properties) {
                                 if (typeof propertyHooks.ResourceSheetHooks[property] !== "undefined") {
-                                    for (var j = tilesets[i].firstgid - 1; j < tilesets[i].firstgid - 1 + sources.length; j++) {
+                                    for (let j = tilesets[i].firstgid - 1; j < tilesets[i].firstgid - 1 + sources.length; j++) {
                                         if (typeof resourceHooks[j] === "undefined") {
-                                            resourceHooks[j] = new Array();
+                                            resourceHooks[j] = [];
                                         }
 
                                         resourceHooks[j].push(this.BuildHookerFunction(tilesets[i].properties[property], propertyHooks.ResourceSheetHooks[property]));
@@ -9078,13 +9076,13 @@ function asyncLoop(action, count, onComplete) {
                                 }
                             }
 
-                            for (var tileIndex in tilesets[i].tileproperties) {
-                                for (var property in tilesets[i].tileproperties[tileIndex])
+                            for (let tileIndex in tilesets[i].tileproperties) {
+                                for (let property in tilesets[i].tileproperties[tileIndex])
                                     if (typeof propertyHooks.ResourceTileHooks[property] !== "undefined") {
                                         index = parseInt(tileIndex) + tilesets[i].firstgid - 1;
 
                                         if (typeof resourceHooks[index] === "undefined") {
-                                            resourceHooks[index] = new Array();
+                                            resourceHooks[index] = [];
                                         }
 
                                         resourceHooks[index].push(this.BuildHookerFunction(tilesets[i].tileproperties[tileIndex][property], propertyHooks.ResourceTileHooks[property]));
@@ -9105,7 +9103,7 @@ function asyncLoop(action, count, onComplete) {
                         var _this = this;
                         setTimeout(function () {
                             // Convert the layer data to a 2 dimensional array and subtract 1 from all the data points (to make it 0 based)
-                            var tmxLayer = tmxData.layers[layerIndex], mappings = _this.NormalizeLayerData(tmxLayer.data, tmxData.width), layer = new EndGate.Graphics.SquareTileMap(tmxLayer.x, tmxLayer.y, tmxData.tilewidth, tmxData.tileheight, resources.Resources, mappings), layerHooks = new Array();
+                            var tmxLayer = tmxData.layers[layerIndex], mappings = _this.NormalizeLayerData(tmxLayer.data, tmxData.width), layer = new EndGate.Graphics.SquareTileMap(tmxLayer.x, tmxLayer.y, tmxData.tilewidth, tmxData.tileheight, resources.Resources, mappings), layerHooks = [];
 
                             for (var property in tmxLayer.properties) {
                                 if (typeof propertyHooks.LayerHooks[property] !== "undefined") {
@@ -9122,12 +9120,12 @@ function asyncLoop(action, count, onComplete) {
 
                             layer.OnTileLoad.Bind(function (details, percentComplete) {
                                 if (resources.ResourceHooks[details.ResourceIndex]) {
-                                    for (var i = 0; i < resources.ResourceHooks[details.ResourceIndex].length; i++) {
+                                    for (let i = 0; i < resources.ResourceHooks[details.ResourceIndex].length; i++) {
                                         resources.ResourceHooks[details.ResourceIndex][i](details);
                                     }
                                 }
 
-                                for (var i = 0; i < layerHooks.length; i++) {
+                                for (let i = 0; i < layerHooks.length; i++) {
                                     layerHooks[i](details);
                                 }
 
@@ -9147,13 +9145,13 @@ function asyncLoop(action, count, onComplete) {
                     };
 
                     OrthogonalLoader.prototype.NormalizeLayerData = function (data, columns) {
-                        var normalized = new Array(), index;
+                        var normalized = [], index;
 
                         for (var i = 0; i < data.length; i++) {
                             index = Math.floor(i / columns);
 
                             if (!(normalized[index] instanceof Array)) {
-                                normalized[index] = new Array();
+                                normalized[index] = [];
                             }
 
                             // Subtract 1 because TMX format starts at 1
@@ -9162,7 +9160,7 @@ function asyncLoop(action, count, onComplete) {
 
                         return normalized;
                     };
-                    OrthogonalLoader._imagePercentMax = .2;
+                    OrthogonalLoader._imagePercentMax = 0.2;
                     return OrthogonalLoader;
                 })();
                 TMX.OrthogonalLoader = OrthogonalLoader;
@@ -9750,7 +9748,7 @@ function asyncLoop(action, count, onComplete) {
                 /**
                 * Gets or sets the ParticleScale.  The ParticleScale is used to control each particles size.  Values are percentages of particles base sizes.
                 */
-                this.ParticleScale = new Particles.Range(.75, 1.5);
+                this.ParticleScale = new Particles.Range(0.75, 1.5);
                 /**
                 * Gets or sets the ParticleRotation.  The ParticleRotation is used to control the initial rotation of emitted particles.
                 */
@@ -9766,13 +9764,13 @@ function asyncLoop(action, count, onComplete) {
                 /**
                 * Gets or sets the ParticleFadeInDuration.  The ParticleFadeInDuration is used to control how long particles take to fade in.
                 */
-                this.ParticleFadeInDuration = new Particles.Range(EndGate.TimeSpan.FromSeconds(.5));
+                this.ParticleFadeInDuration = new Particles.Range(EndGate.TimeSpan.FromSeconds(0.5));
                 /**
                 * Gets or sets the ParticleFadeOutDuration.  The ParticleFadeOutDuration is used to control how long particles take to fade out.
                 */
-                this.ParticleFadeOutDuration = new Particles.Range(EndGate.TimeSpan.FromSeconds(.5), EndGate.TimeSpan.FromSeconds(1));
+                this.ParticleFadeOutDuration = new Particles.Range(EndGate.TimeSpan.FromSeconds(0.5), EndGate.TimeSpan.FromSeconds(1));
 
-                this._texturePool = new Array();
+                this._texturePool = [];
                 this._particlePool = {};
                 this._particleId = 0;
                 this._emitting = false;
@@ -9833,7 +9831,7 @@ function asyncLoop(action, count, onComplete) {
             * To allow for complex particle manipulation this method can be overridden by derived Emitter classes.
             */
             Emitter.prototype.Emit = function () {
-                var particleCount = Particles.Range.RandomNumber(this.EmissionOutput), endLocation, emissionDirection, particleSpeed, particleLifeTime, particle, particles = new Array();
+                var particleCount = Particles.Range.RandomNumber(this.EmissionOutput), endLocation, emissionDirection, particleSpeed, particleLifeTime, particle, particles = [];
 
                 for (var i = 0; i < particleCount; i++) {
                     particleLifeTime = Particles.Range.RandomTimeSpan(this.ParticleLifetime);
@@ -10136,11 +10134,11 @@ function asyncLoop(action, count, onComplete) {
                     if ((elapsedMilliseconds /= duration.Milliseconds) < (1 / 2.75)) {
                         return change * (7.5625 * elapsedMilliseconds * elapsedMilliseconds) + from;
                     } else if (elapsedMilliseconds < (2 / 2.75)) {
-                        return change * (7.5625 * (elapsedMilliseconds -= (1.5 / 2.75)) * elapsedMilliseconds + .75) + from;
+                        return change * (7.5625 * (elapsedMilliseconds -= (1.5 / 2.75)) * elapsedMilliseconds + 0.75) + from;
                     } else if (elapsedMilliseconds < (2.5 / 2.75)) {
-                        return change * (7.5625 * (elapsedMilliseconds -= (2.25 / 2.75)) * elapsedMilliseconds + .9375) + from;
+                        return change * (7.5625 * (elapsedMilliseconds -= (2.25 / 2.75)) * elapsedMilliseconds + 0.9375) + from;
                     } else {
-                        return change * (7.5625 * (elapsedMilliseconds -= (2.625 / 2.75)) * elapsedMilliseconds + .984375) + from;
+                        return change * (7.5625 * (elapsedMilliseconds -= (2.625 / 2.75)) * elapsedMilliseconds + 0.984375) + from;
                     }
                 };
                 Bounce._easeInOut = function (from, to, elapsed, duration) {
@@ -10149,7 +10147,7 @@ function asyncLoop(action, count, onComplete) {
                     if (elapsed.Milliseconds < duration.Milliseconds / 2) {
                         return Bounce.EaseIn(0, change, elapsed.Multiply(2), duration) * 0.5 + from;
                     } else {
-                        return Bounce.EaseOut(0, change, elapsed.Multiply(2).Subtract(duration), duration) * .5 + change * 0.5 + from;
+                        return Bounce.EaseOut(0, change, elapsed.Multiply(2).Subtract(duration), duration) * 0.5 + change * 0.5 + from;
                     }
                 };
                 return Bounce;
@@ -10354,7 +10352,7 @@ function asyncLoop(action, count, onComplete) {
                         return from + change;
                     }
 
-                    timePartial = duration.Milliseconds * .3;
+                    timePartial = duration.Milliseconds * 0.3;
                     timePartialQuarter = timePartial / 4;
 
                     return -(change * Math.pow(2, 10 * (elapsedMilliseconds -= 1)) * Math.sin((elapsedMilliseconds * duration.Milliseconds - timePartialQuarter) * (2 * Math.PI) / timePartial)) + from;
@@ -10370,7 +10368,7 @@ function asyncLoop(action, count, onComplete) {
                         return from + change;
                     }
 
-                    timePartial = duration.Milliseconds * .3;
+                    timePartial = duration.Milliseconds * 0.3;
                     timePartialQuarter = timePartial / 4;
 
                     return (change * Math.pow(2, -10 * elapsedMilliseconds) * Math.sin((elapsedMilliseconds * duration.Milliseconds - timePartialQuarter) * (2 * Math.PI) / timePartial) + change + from);
@@ -10386,13 +10384,13 @@ function asyncLoop(action, count, onComplete) {
                         return from + change;
                     }
 
-                    timePartial = duration.Milliseconds * (.3 * 1.5);
+                    timePartial = duration.Milliseconds * (0.3 * 1.5);
                     timePartialQuarter = timePartial / 4;
 
                     if (elapsedMilliseconds < 1) {
-                        return -.5 * (change * Math.pow(2, 10 * (elapsedMilliseconds -= 1)) * Math.sin((elapsedMilliseconds * duration.Milliseconds - timePartialQuarter) * (2 * Math.PI) / timePartial)) + from;
+                        return -0.5 * (change * Math.pow(2, 10 * (elapsedMilliseconds -= 1)) * Math.sin((elapsedMilliseconds * duration.Milliseconds - timePartialQuarter) * (2 * Math.PI) / timePartial)) + from;
                     }
-                    return (change * Math.pow(2, -10 * (elapsedMilliseconds -= 1)) * Math.sin((elapsedMilliseconds * duration.Milliseconds - timePartialQuarter) * (2 * Math.PI) / timePartial) * .5 + change + from);
+                    return (change * Math.pow(2, -10 * (elapsedMilliseconds -= 1)) * Math.sin((elapsedMilliseconds * duration.Milliseconds - timePartialQuarter) * (2 * Math.PI) / timePartial) * 0.5 + change + from);
                 };
                 return Elastic;
             })();
@@ -10990,6 +10988,8 @@ var Wanted;
             this._bufferedViewport = new eg.Bounds.BoundingRectangle(this.Scene.Camera.Position, this.Scene.Camera.Size.Add(Wanted.GameScreen.SCREEN_BUFFER_AREA));
             this._cursorManager = new Wanted.CursorManager(this._bufferedViewport, this.Scene, this.CollisionManager, this.Content);
             this._cursorManager.Initialize(new Wanted.UserCursorManager(initializationData.cursorId, this._cursorManager, this.Input, serverAdapter));
+            this._crowd = new Wanted.Crowd(this.Scene, this.Content, gameScreen);
+            this._crowd.Initialize();
             // this._map = new Wanted.Map(this.Scene, this.CollisionManager, this.Content, this.Input.Keyboard, serverAdapter);
             this._hud = new Wanted.HUDManager(initializationData, this._cursorManager, this.Input.Keyboard, serverAdapter);
             // this._debugManager = new Wanted.Debug.DebugManager(initializationData.CursorId, this, serverAdapter);
@@ -11007,14 +11007,18 @@ var Wanted;
         }
         Game.prototype.LoadContent = function () {
             this.Content.LoadImage("Cursor", "../assets/cursor.png", 512, 512);
+            this.Content.LoadImage("PeepSheet", "../assets/open-peeps-sheet.png", 3600, 2268);
+            this.Content.LoadImage("PeepSheetMirror", "../assets/open-peeps-sheet-mirror.png", 3600, 2268);
 
             Wanted.CursorBodyGraphic.LoadCursorBodies(this.Content);
+            Wanted.Crowd.LoadPeepBodies(this.Content);
         };
 
         Game.prototype.Update = function (gameTime) {
             this._bufferedViewport.Position = this.Scene.Camera.Position;
 
             this._cursorManager.Update(gameTime);
+            this._crowd.Update(gameTime);
             this._hud.Update(gameTime);
             // this._debugManager.Update(gameTime);
         };
@@ -11383,7 +11387,7 @@ var Wanted;
                     // console.log("Payload: ", payload);
                     try {
                         _this.OnPayload.Trigger(_this._payloadDecompressor.Decompress(payload));
-                    } catch(e) {
+                    } catch (e) {
                         console.log("error:", e)
                     }
                 });
@@ -11397,7 +11401,7 @@ var Wanted;
                 });
 
                 this.Connection.on("controlTransferred", function () {
-                //     _this.OnControlTransferred.Trigger();
+                    //     _this.OnControlTransferred.Trigger();
                 });
 
                 this.Connection.on("pingBack", function () {
@@ -11405,7 +11409,7 @@ var Wanted;
                 });
 
                 this.Connection.on("mapSizeIncreased", function (size) {
-                //     _this.OnMapResize.Trigger(new eg.Size2d(size.Width, size.Height));
+                    //     _this.OnMapResize.Trigger(new eg.Size2d(size.Width, size.Height));
                 });
 
                 this.Connection.on("chatMessage", function (from, message, type) {
@@ -11852,6 +11856,233 @@ var Wanted;
 })(Wanted || (Wanted = {}));
 /*next file*/
 
+var eg = EndGate;
+var Wanted;
+(function (Wanted) {
+    var Crowd = (function () {
+        function Crowd(scene, contentManager, gameScreen) {
+            this._scene = scene;
+            this._contentManager = contentManager;
+            this._gameScreen = gameScreen;
+            this._allPeeps = [];
+            this._availablePeeps = [];
+            this._crowd = [];
+            this._sheetMap = new eg.Graphics.SquareTileMap.ExtractTiles(Crowd._sheet, Crowd._sheet.ClipSize.Width / Crowd.ROWS, Crowd._sheet.ClipSize.Height / Crowd.COLS);
+            this._sheetMapMirror = new eg.Graphics.SquareTileMap.ExtractTiles(Crowd._sheetMirror, Crowd._sheetMirror.ClipSize.Width / Crowd.ROWS, Crowd._sheetMirror.ClipSize.Height / Crowd.COLS);
+        }
+
+        Crowd.prototype.CreatePeeps = function () {
+            let _this = this;
+
+            for (let i = 0; i < Crowd.POPULATION; i++) {
+                let selected = Math.floor(Wanted.RandomRange(0, Crowd.ROWS * Crowd.COLS - 1));
+                let peep = new Wanted.Peep({
+                    rectWidth: Crowd._sheet.ClipSize.Width / Crowd.ROWS,
+                    rectHeight: Crowd._sheet.ClipSize.Height / Crowd.COLS,
+                    tile: this._sheetMap[selected],
+                    tileMirror: this._sheetMapMirror[selected]
+                }, this._gameScreen);
+                this._allPeeps.push(peep);
+                this._scene.Add(peep.Graphic);
+
+                // this._peeps[peep.Id].OnDisposed.Bind(function (peep) {
+                //     delete _this._peeps[(peep).Id];
+                // });
+            }
+        };
+
+        Crowd.prototype.Initialize = function () {
+            console.log("INIT CROWD!");
+            this.CreatePeeps();
+            this._crowd.forEach(peep => {
+                peep._walk.kill();
+            });
+
+            this._crowd.length = 0;
+            this._availablePeeps.length = 0;
+            this._availablePeeps.push(...this._allPeeps);
+        };
+
+        Crowd.prototype.AddPeepToCrowd = function () {
+            const peep = Wanted.RemoveRandomFromArray(this._availablePeeps);
+            peep.ResetPeep();
+
+            /*
+            const walk = Wanted.GetRandomFromArray(this._walks)({
+                peep,
+                props: this.ResetPeep({
+                    peep
+                })
+            }).eventCallback('onComplete', () => {
+                this.RemovePeepFromCrowd(peep);
+                this.AddPeepToCrowd();
+            });
+            */
+
+            peep.Graphic.Visible = true;
+            this._crowd.push(peep);
+            this._crowd.sort((a, b) => a.AnchorY - b.AnchorY);
+
+            return peep;
+        };
+
+        Crowd.prototype.RemovePeepFromCrowd = function (peep) {
+            Wanted.RemoveItemFromArray(this._crowd, peep);
+            this._availablePeeps.push(peep);
+        };
+
+        Crowd.prototype.LoadPayload = function (payload) {
+            let _this = this;
+            // this._impostor.LoadPayload(payload.Impostor);
+        };
+
+        Crowd.prototype.Update = function (gameTime) {
+            if (this._availablePeeps.length) {
+                //this.AddPeepToCrowd()._walk.progress(Math.random());
+                this.AddPeepToCrowd();
+            }
+            let zIndex = 1;
+            for (var id in this._crowd) {
+                this._crowd[id].Update(gameTime);
+                this._crowd[id].Graphic.ZIndex = zIndex;
+                zIndex++;
+            }
+
+            // this.impostor.Update(gameTime);
+        };
+        return Crowd;
+    })();
+
+    Crowd.LoadPeepBodies = // Made as a static so we don't have to construct the peep bodies every time a new peep is created.
+        function (contentManager) {
+            Crowd._sheet = contentManager.GetImage("PeepSheet");
+            Crowd._sheetMirror = contentManager.GetImage("PeepSheetMirror");
+        };
+
+    Crowd.ROWS = 15;
+    Crowd.COLS = 7;
+    Crowd.POPULATION = 200;
+    Wanted.Crowd = Crowd;
+})(Wanted || (Wanted = {}));
+/*next file*/
+
+
+/*next file*/
+
+var Wanted;
+(function (Wanted) {
+    var Peep = (function (_super) {
+        __extends(Peep, _super);
+        function Peep(payload, gameScreen) {
+            var _this = this;
+            this._gameScreen = gameScreen;
+            this.Position = new eg.Vector2d();
+            this.Graphic = new Wanted.PeepGraphic(payload, this.Position, Peep.SCALE);
+
+            // Going to use the rectangle to "hold" all the other graphics
+            _super.call(this, this.Graphic.GetDrawBounds());
+        }
+
+        Peep.prototype.ResetPeep = function () {
+            const direction = Math.random() > 0.5 ? 1 : -1;
+            const peepHeight = this.Graphic.Size.Height;
+            const peepWidth = this.Graphic.Size.Width;
+            // using an ease function to skew random to lower values to help hide that peeps have no legs
+            const startY = Wanted.RandomRange(0, this._gameScreen.Viewport.Height - (peepHeight * Peep.SCALE) );
+            this.ScaleY = 1;
+            let startX = Wanted.RandomRange(- peepWidth, this._gameScreen.Viewport.Height + peepWidth);
+            let endX;
+
+            if (direction === 1) {
+                // startX = -peepWidth;
+                endX = this._gameScreen.Viewport.Width;
+                this.ScaleX = 1;
+            } else {
+                // startX = this._gameScreen.Viewport.Width + peepWidth;
+                endX = 0;
+                this.ScaleX = -1;
+            }
+            
+            this.Graphic.Flip(this.ScaleX == -1);
+            this.Position.X = startX;
+            this.Position.Y = startY;
+            this.EndX = endX;
+            this.AnchorY = startY;
+            this.Visible = false;
+        };
+
+        Peep.prototype.Move = function (gameTime) {
+            const yDuration = 8;
+            const peepWidth = this.Graphic.Size.Width;
+            const xVelocity = Wanted.RandomRange(125, 210);
+            const yVelocity = Wanted.RandomRange(70, 100);
+
+            if (this.Position.X < 0 - peepWidth) {
+                this.ScaleX = -1;
+                this.Graphic.Flip(this.ScaleX == -1);
+            }
+            else if (this.Position.X > this._gameScreen.Viewport.Width + peepWidth) {
+                this.ScaleX = 1;
+                this.Graphic.Flip(this.ScaleX == -1);
+            }
+            this.Position.X += xVelocity * gameTime.Elapsed.Seconds * this.ScaleX;
+
+            if (this.Position.Y > this.AnchorY + yDuration) {
+                this.ScaleY = -1;
+            }
+            else if (this.Position.Y < this.AnchorY - yDuration) {
+                this.ScaleY = 1;
+            }
+            this.Position.Y += yVelocity * gameTime.Elapsed.Seconds * this.ScaleY;
+        };
+
+        Peep.prototype.Update = function (gameTime) {
+            var _this = this;
+
+            _this.Move(gameTime);
+
+            var moveables = new Array(this.Bounds, this.Graphic);
+            for (var i = 0; i < moveables.length; i++) {
+                moveables[i].Position = _this.Position;
+            }
+
+            // Updates rotation
+            // this.Graphic.RotatePeep(this.MovementController.Rotation);
+            // this.Graphic.Update(gameTime);
+        };
+
+        Peep.SCALE = 0.8;
+        return Peep;
+    })(eg.Collision.Collidable);
+    Wanted.Peep = Peep;
+})(Wanted || (Wanted = {}));
+/*next file*/
+
+var Wanted;
+(function (Wanted) {
+    var PeepGraphic = (function (_super) {
+        __extends(PeepGraphic, _super);
+        function PeepGraphic(payload, position, scale) {
+            _super.call(this, position.X, position.Y, payload.rectWidth * scale, payload.rectHeight * scale, eg.Graphics.Color.Transparent);
+
+            this._peepBody = new eg.Graphics.Sprite2d(40, 40, payload.tile, payload.rectWidth * scale, payload.rectHeight * scale);
+            this._peepBodyMirror = new eg.Graphics.Sprite2d(40, 40, payload.tileMirror, payload.rectWidth * scale, payload.rectHeight * scale);
+            this.AddChild(this._peepBody);
+            this.AddChild(this._peepBodyMirror);
+            this.Visible = false;
+        }
+
+        PeepGraphic.prototype.Flip = function (mirror) {
+            this._peepBodyMirror.Visible = mirror;
+            this._peepBody.Visible = !mirror;
+        };
+
+        return PeepGraphic;
+    })(eg.Graphics.Rectangle);
+    Wanted.PeepGraphic = PeepGraphic;
+})(Wanted || (Wanted = {}));
+/*next file*/
+
 
 /*next file*/
 
@@ -11883,8 +12114,8 @@ var Wanted;
 var Wanted;
 (function (Wanted) {
     var HUDManager = (function () {
-        function HUDManager(initialization, _cursorManager, keyboard, serverAdapter) {
-            this._cursorManager = _cursorManager;
+        function HUDManager(initialization, cursorManager, keyboard, serverAdapter) {
+            this._cursorManager = cursorManager;
             this._gameHUD = $("#gameHUD");
             this._doublePopupHolder = $("#doublePopupHolder");
             this._locationStats = $("#LocationStatisticsHolder");
@@ -11919,7 +12150,7 @@ var Wanted;
             this._gameHUD.css("width", newViewport.Width);
             this._gameHUD.css("height", this._gameHUDHeight);
             this._gameHUD.css("top", newViewport.Height);
-            this._cursorHealthMonitor.OnScreenResize();
+            // this._cursorHealthMonitor.OnScreenResize();
             this.CenterDoublePopup(newViewport);
 
             if (newViewport.Width <= 1370) {
@@ -12062,6 +12293,9 @@ var Wanted;
     })();
     Wanted.LeaderboardManager = LeaderboardManager;
 })(Wanted || (Wanted = {}));
+/*next file*/
+
+
 /*next file*/
 
 

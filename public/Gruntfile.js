@@ -34,6 +34,7 @@ module.exports = function (grunt) {
                     'scripts/server/*.js',
                     'scripts/user/*.js',
                     'scripts/cursor/*.js',
+                    'scripts/peeps/*.js',
                     'scripts/HUD/*.js'
                 ],
                 tasks: ['concat']
@@ -65,6 +66,7 @@ module.exports = function (grunt) {
                     'scripts/server/*.js',
                     'scripts/user/*.js',
                     'scripts/cursor/*.js',
+                    'scripts/peeps/*.js',
                     'scripts/HUD/*.js'
                 ],
                 dest: 'build/scripts/bundles/game.js'

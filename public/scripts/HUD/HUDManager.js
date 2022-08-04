@@ -1,8 +1,8 @@
 var Wanted;
 (function (Wanted) {
     var HUDManager = (function () {
-        function HUDManager(initialization, _cursorManager, keyboard, serverAdapter) {
-            this._cursorManager = _cursorManager;
+        function HUDManager(initialization, cursorManager, keyboard, serverAdapter) {
+            this._cursorManager = cursorManager;
             this._gameHUD = $("#gameHUD");
             this._doublePopupHolder = $("#doublePopupHolder");
             this._locationStats = $("#LocationStatisticsHolder");
@@ -37,7 +37,7 @@ var Wanted;
             this._gameHUD.css("width", newViewport.Width);
             this._gameHUD.css("height", this._gameHUDHeight);
             this._gameHUD.css("top", newViewport.Height);
-            this._cursorHealthMonitor.OnScreenResize();
+            // this._cursorHealthMonitor.OnScreenResize();
             this.CenterDoublePopup(newViewport);
 
             if (newViewport.Width <= 1370) {

@@ -75,7 +75,7 @@ var Wanted;
                     // console.log("Payload: ", payload);
                     try {
                         _this.OnPayload.Trigger(_this._payloadDecompressor.Decompress(payload));
-                    } catch(e) {
+                    } catch (e) {
                         console.log("error:", e)
                     }
                 });
@@ -89,7 +89,7 @@ var Wanted;
                 });
 
                 this.Connection.on("controlTransferred", function () {
-                //     _this.OnControlTransferred.Trigger();
+                    //     _this.OnControlTransferred.Trigger();
                 });
 
                 this.Connection.on("pingBack", function () {
@@ -97,7 +97,7 @@ var Wanted;
                 });
 
                 this.Connection.on("mapSizeIncreased", function (size) {
-                //     _this.OnMapResize.Trigger(new eg.Size2d(size.Width, size.Height));
+                    //     _this.OnMapResize.Trigger(new eg.Size2d(size.Width, size.Height));
                 });
 
                 this.Connection.on("chatMessage", function (from, message, type) {

@@ -23,6 +23,8 @@ var Wanted;
             this._bufferedViewport = new eg.Bounds.BoundingRectangle(this.Scene.Camera.Position, this.Scene.Camera.Size.Add(Wanted.GameScreen.SCREEN_BUFFER_AREA));
             this._cursorManager = new Wanted.CursorManager(this._bufferedViewport, this.Scene, this.CollisionManager, this.Content);
             this._cursorManager.Initialize(new Wanted.UserCursorManager(initializationData.cursorId, this._cursorManager, this.Input, serverAdapter));
+            this._crowd = new Wanted.Crowd(this.Scene, this.Content, gameScreen);
+            this._crowd.Initialize();
             // this._map = new Wanted.Map(this.Scene, this.CollisionManager, this.Content, this.Input.Keyboard, serverAdapter);
             this._hud = new Wanted.HUDManager(initializationData, this._cursorManager, this.Input.Keyboard, serverAdapter);
             // this._debugManager = new Wanted.Debug.DebugManager(initializationData.CursorId, this, serverAdapter);
@@ -40,14 +42,18 @@ var Wanted;
         }
         Game.prototype.LoadContent = function () {
             this.Content.LoadImage("Cursor", "../assets/cursor.png", 512, 512);
+            this.Content.LoadImage("PeepSheet", "../assets/open-peeps-sheet.png", 3600, 2268);
+            this.Content.LoadImage("PeepSheetMirror", "../assets/open-peeps-sheet-mirror.png", 3600, 2268);
 
             Wanted.CursorBodyGraphic.LoadCursorBodies(this.Content);
+            Wanted.Crowd.LoadPeepBodies(this.Content);
         };
 
         Game.prototype.Update = function (gameTime) {
             this._bufferedViewport.Position = this.Scene.Camera.Position;
 
             this._cursorManager.Update(gameTime);
+            this._crowd.Update(gameTime);
             this._hud.Update(gameTime);
             // this._debugManager.Update(gameTime);
         };
