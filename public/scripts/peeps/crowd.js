@@ -103,6 +103,6 @@ var Wanted;
 
     Crowd.ROWS = 15;
     Crowd.COLS = 7;
-    Crowd.POPULATION = 200;
+    Crowd.POPULATION = 300;
     Wanted.Crowd = Crowd;
 })(Wanted || (Wanted = {}));

@@ -17,17 +17,15 @@ var Wanted;
             const peepHeight = this.Graphic.Size.Height;
             const peepWidth = this.Graphic.Size.Width;
             // using an ease function to skew random to lower values to help hide that peeps have no legs
-            const startY = Wanted.RandomRange(0, this._gameScreen.Viewport.Height - (peepHeight * Peep.SCALE) );
+            const startY = Wanted.RandomRange(0, this._gameScreen.Viewport.Height - (peepHeight * Peep.SCALE / 2));
             this.ScaleY = 1;
             let startX = Wanted.RandomRange(- peepWidth, this._gameScreen.Viewport.Height + peepWidth);
             let endX;
 
             if (direction === 1) {
-                // startX = -peepWidth;
                 endX = this._gameScreen.Viewport.Width;
                 this.ScaleX = 1;
             } else {
-                // startX = this._gameScreen.Viewport.Width + peepWidth;
                 endX = 0;
                 this.ScaleX = -1;
             }
@@ -38,23 +36,23 @@ var Wanted;
             this.EndX = endX;
             this.AnchorY = startY;
             this.Visible = false;
+            this.xVelocity = Wanted.RandomRange(50, 350);
+            this.yVelocity = this.xVelocity * 0.4;
         };
 
         Peep.prototype.Move = function (gameTime) {
             const yDuration = 8;
             const peepWidth = this.Graphic.Size.Width;
-            const xVelocity = Wanted.RandomRange(125, 210);
-            const yVelocity = Wanted.RandomRange(70, 100);
 
             if (this.Position.X < 0 - peepWidth) {
-                this.ScaleX = -1;
-                this.Graphic.Flip(this.ScaleX == -1);
-            }
-            else if (this.Position.X > this._gameScreen.Viewport.Width + peepWidth) {
                 this.ScaleX = 1;
                 this.Graphic.Flip(this.ScaleX == -1);
             }
-            this.Position.X += xVelocity * gameTime.Elapsed.Seconds * this.ScaleX;
+            else if (this.Position.X > this._gameScreen.Viewport.Width + peepWidth) {
+                this.ScaleX = -1;
+                this.Graphic.Flip(this.ScaleX == -1);
+            }
+            this.Position.X += this.xVelocity * gameTime.Elapsed.Seconds * this.ScaleX;
 
             if (this.Position.Y > this.AnchorY + yDuration) {
                 this.ScaleY = -1;
@@ -62,7 +60,7 @@ var Wanted;
             else if (this.Position.Y < this.AnchorY - yDuration) {
                 this.ScaleY = 1;
             }
-            this.Position.Y += yVelocity * gameTime.Elapsed.Seconds * this.ScaleY;
+            this.Position.Y += this.yVelocity * gameTime.Elapsed.Seconds * this.ScaleY;
         };
 
         Peep.prototype.Update = function (gameTime) {
