@@ -11342,13 +11342,14 @@ var Wanted;
 
             ServerAdapter.prototype.Negotiate = function () {
                 var _this = this;
-                var userInformation = this._connectionManager.PrepareRegistration();
-                console.log("userInformation: ", userInformation);
+                
                 var result = $.Deferred();
 
                 this.Wire();
 
                 this.Connection.start().then(function () {
+                    var userInformation = _this._connectionManager.PrepareRegistration();
+                    console.log("userInformation: ", userInformation);
                     _this.TryInitialize(userInformation, function (initialization) {
                         initialization.userInformation = userInformation;
                         console.log(initialization);

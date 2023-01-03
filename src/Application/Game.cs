@@ -178,8 +178,7 @@ namespace Wanted.Application
             }
             catch (Exception e)
             {
-                System.Diagnostics.Debug.WriteLine(e);
-                //ErrorLog.Instance.Log(e);
+                ErrorLog.Instance.Log(e);
             }
         }
 

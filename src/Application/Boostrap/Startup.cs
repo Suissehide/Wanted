@@ -128,6 +128,11 @@ namespace Wanted.Boostrap
 
             context.Response.Cookies.Append("wanted.state", state, new CookieOptions
             {
+                HttpOnly = true,
+                IsEssential = true,
+                Secure = false,
+                SameSite = SameSiteMode.Strict,
+                Domain = "localhost",
                 Expires = DateTime.Now.AddDays(30)
             });
         }
