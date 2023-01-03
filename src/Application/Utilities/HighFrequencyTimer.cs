@@ -23,7 +23,7 @@ namespace Wanted.Application.Utilities
         /// <param name="fps">The desired frame rate per second.</param>
         /// <param name="callback">The callback to be invoked on each frame.</param>
         public HighFrequencyTimer(double fps, Action<long> callback)
-            : this(fps, callback, null, null, null)
+            : this(fps, callback, () => { }, () => { }, (_) => { })
         {
 
         }
@@ -98,7 +98,7 @@ namespace Wanted.Application.Utilities
             return Interlocked.Read(ref _state) == 2;
         }
 
-        private void Run(object state)
+        private void Run(object? state)
         {
             long lastMs = 0;
             var sw = Stopwatch.StartNew();

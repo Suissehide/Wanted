@@ -36,10 +36,10 @@ namespace Wanted.Application.LeaderboardEntity
                  select user.MyCursor)
                 .Select(cursor => new LeaderboardEntry()
                 {
-                    Name = cursor.Name,
-                    Wins = cursor.StatRecorder.Wins,
-                    Id = cursor.Id,
-                    ConnectionId = cursor.Host.ConnectionId
+                    Id = cursor?.Id,
+                    Name = cursor?.Name,
+                    Wins = cursor?.StatRecorder.Wins,
+                    ConnectionId = cursor?.Host?.ConnectionId
                 })
                 .OrderByDescending(entry => entry.Wins)
                 .ThenByDescending(entry => entry.Name);
@@ -48,7 +48,8 @@ namespace Wanted.Application.LeaderboardEntity
 
             foreach (LeaderboardEntry entry in currentLeaderboard)
             {
-                _userHandler.GetUser(entry.ConnectionId).CurrentLeaderboardPosition = i++;
+                var user = _userHandler.GetUser(entry.ConnectionId);
+                if (user is not null) user.CurrentLeaderboardPosition = i++;
             }
 
             return currentLeaderboard.Take(LEADERBOARD_SIZE);

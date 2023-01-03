@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.WebUtilities;
 using Newtonsoft.Json;
 using System.Text;
-using System.Text.Json;
 using System.Web;
 using Wanted.Application;
 using Wanted.Application.Registration;
@@ -63,6 +62,7 @@ namespace Wanted.Boostrap
 
             app.Use((context, next) =>
             {
+                System.Diagnostics.Debug.WriteLine("MIDDLEWARE");
                 var state = context.Request.Cookies["wanted.state"];
 
                 if (state != null)
@@ -71,6 +71,7 @@ namespace Wanted.Boostrap
                     {
                         string decoded = HttpUtility.UrlDecode(state);
                         var rc = JsonConvert.DeserializeObject<RegisteredClient>(decoded);
+                        if (rc is null) throw new ArgumentNullException(paramName: nameof(rc), message: "cookie can't be null.");
 
                         if (rc.Identity == "Guest")
                         {
@@ -98,8 +99,11 @@ namespace Wanted.Boostrap
                 else
                 {
                     //hack
-                    var rc = new RegisteredClient(null, "Guest" + Guid.NewGuid().ToString(),
-                        System.Net.WebUtility.HtmlEncode("Guest" + Interlocked.Increment(ref GuestId)));
+                    var rc = new RegisteredClient(
+                        null,
+                        "Guest" + Guid.NewGuid().ToString(),
+                        System.Net.WebUtility.HtmlEncode("Guest" + Interlocked.Increment(ref GuestId))
+                    );
                     game.RegistrationHandler.Register(rc);
 
                     SetState(rc, context, provider);

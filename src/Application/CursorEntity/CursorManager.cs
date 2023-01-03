@@ -19,16 +19,18 @@ namespace Wanted.Application.CursorEntity
         /// <param name="cursor">The cursor to add</param>
         public void Add(Cursor cursor)
         {
-            Cursors.TryAdd(cursor.Host.ConnectionId, cursor);
+            if (cursor is not null && cursor.Host is not null)
+                Cursors.TryAdd(cursor.Host.ConnectionId, cursor);
         }
 
         /// <summary>
         /// Removes cursor from the game handler. This is used when a cursor is destroyed and no longer needs to be monitored.
         /// </summary>
         /// <param name="key"></param>
-        public void Remove(string key)
+        public void Remove(string? key)
         {
-            Cursors.TryRemove(key, out var _);
+            if (!string.IsNullOrEmpty(key))
+                Cursors.TryRemove(key, out var _);
         }
 
         public void Update(GameTime gameTime)

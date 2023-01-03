@@ -36,7 +36,7 @@ namespace Wanted.Application.UserEntity
             }
         }
 
-        public Cursor GetUserCursor(string connectionId)
+        public Cursor? GetUserCursor(string connectionId)
         {
             return _userList[connectionId].MyCursor;
         }
@@ -47,9 +47,11 @@ namespace Wanted.Application.UserEntity
             return _userList.ContainsKey(connectionId) && _userList[connectionId].MyCursor != null;
         }
 
-        public User GetUser(string connectionId)
+        public User? GetUser(string? connectionId)
         {
-            return _userList[connectionId];
+            if (!string.IsNullOrEmpty(connectionId))
+                return _userList[connectionId];
+            return null;
         }
 
         public List<User> GetUsers()

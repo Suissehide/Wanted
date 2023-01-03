@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.SignalR;
 using Wanted.Application.LeaderboardEntity;
 using Wanted.Application.UserEntity;
+using Wanted.Application.Utilities;
 using Wanted.Hubs;
 
 namespace Wanted.Application
@@ -29,12 +30,13 @@ namespace Wanted.Application
             {
                 if (_userHandler.UserExistsAndReady(connectionId))
                 {
-                    User user = _userHandler.GetUser(connectionId);
+                    User? user = _userHandler.GetUser(connectionId);
+                    if (user is null) return;
 
                     //It's possible for a controller to disconnect without a cursor
                     if (!user.Controller)
                     {
-                        user.MyCursor.Dispose();
+                        if (user.MyCursor is not null) user.MyCursor.Dispose();
                         user.Connected = false;
                     }
                     else
@@ -42,8 +44,8 @@ namespace Wanted.Application
                         // Remove me from the cursor hosts remote controllers
                         if (user.MyCursor != null)
                         {
-                            user.MyCursor.Host.RemoteControllers.Remove(user);
-                            user.MyCursor.Host.NotificationManager.Notify("Detached controller.");
+                            user.MyCursor.Host?.RemoteControllers.Remove(user);
+                            user.MyCursor.Host?.NotificationManager.Notify("Detached controller.");
                             user.MyCursor = null;
                         }
 
@@ -65,7 +67,7 @@ namespace Wanted.Application
             }
             catch (Exception e)
             {
-                //ErrorLog.Instance.Log(e);
+                ErrorLog.Instance.Log(e);
             }
             finally
             {

@@ -11110,12 +11110,14 @@ var Wanted;
 
 var Wanted;
 $(function () {
-    const connection = new signalR.HubConnectionBuilder()
+    var connection = new signalR
+        .HubConnectionBuilder()
         .configureLogging(signalR.LogLevel.Debug)
-        .withUrl("http://localhost:5008/hub", {
+        .withUrl("https://localhost:44302/hub", {
             skipNegotiation: true,
             transport: signalR.HttpTransportType.WebSockets
-        }).build();
+        })
+        .build();
 
     var gameCanvas = $("#game"),
         popUpHolder = $("#popUpHolder"),
@@ -11315,20 +11317,20 @@ var Wanted;
 (function (Wanted) {
     (function (Server) {
         var ServerAdapter = (function () {
-            function ServerAdapter(Connection, authCookieName) {
+            function ServerAdapter(connection, authCookieName) {
                 var _this = this;
-                this.Connection = Connection;
+                this.Connection = connection;
                 this.Proxy = Proxy;
                 var savedProxyInvoke = this.Proxy.invoke;
 
                 this.OnPayload = new eg.EventHandler1();
                 this.OnLeaderboardUpdate = new eg.EventHandler1();
-                this.OnForcedDisconnct = new eg.EventHandler();
+                this.OnForcedDisconnect = new eg.EventHandler();
                 this.OnControlTransferred = new eg.EventHandler();
                 this.OnPingRequest = new eg.EventHandler();
                 this.OnMapResize = new eg.EventHandler1();
                 this.OnMessageReceived = new eg.EventHandler1();
-
+                
                 this._connectionManager = new Server.ServerConnectionManager(authCookieName);
 
                 (this.Proxy.invoke) = function () {
@@ -11337,13 +11339,16 @@ var Wanted;
                     }
                 };
             }
+
             ServerAdapter.prototype.Negotiate = function () {
                 var _this = this;
+                var userInformation = this._connectionManager.PrepareRegistration();
+                console.log("userInformation: ", userInformation);
                 var result = $.Deferred();
+
                 this.Wire();
 
                 this.Connection.start().then(function () {
-                    var userInformation = _this._connectionManager.PrepareRegistration();
                     _this.TryInitialize(userInformation, function (initialization) {
                         initialization.userInformation = userInformation;
                         console.log(initialization);
@@ -11365,7 +11370,7 @@ var Wanted;
             ServerAdapter.prototype.TryInitialize = function (userInformation, onComplete, count) {
                 if (typeof count === "undefined") { count = 0; }
                 var _this = this;
-                this.Connection.invoke("initializeClient", userInformation.RegistrationId).then(function (initialization) {
+                this.Connection.invoke("InitializeClient", userInformation.RegistrationId).then(function (initialization) {
                     if (!initialization) {
                         if (count >= ServerAdapter.NEGOTIATE_RETRIES) {
                             console.log("Could not negotiate with server, refreshing the page.");
@@ -11388,7 +11393,7 @@ var Wanted;
                     try {
                         _this.OnPayload.Trigger(_this._payloadDecompressor.Decompress(payload));
                     } catch (e) {
-                        console.log("error:", e)
+                        console.log("error:", e);
                     }
                 });
 
@@ -11436,7 +11441,9 @@ var Wanted;
                 this._authCookieName = _authCookieName;
             }
             ServerConnectionManager.prototype.PrepareRegistration = function () {
-                var stateCookie = $.cookie(this._authCookieName), state = stateCookie ? JSON.parse((stateCookie)) : {}, registrationId = state.RegistrationId;
+                var stateCookie = $.cookie(this._authCookieName);
+                var state = stateCookie ? JSON.parse((stateCookie)) : {};
+                var registrationId = state.RegistrationId;
 
                 if (registrationId) {
                     delete state.RegistrationId;

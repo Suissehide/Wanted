@@ -16,7 +16,7 @@ namespace Wanted.Application.UserEntity
         private Size _viewport;
         public List<User> RemoteControllers { get; } = new List<User>();
 
-        public User(string connectionId, Cursor cursor, RegisteredClient rc)
+        public User(string connectionId, Cursor cursor, RegisteredClient? rc)
         {
             RegistrationTicket = rc;
             MyCursor = cursor;
@@ -35,11 +35,11 @@ namespace Wanted.Application.UserEntity
             }
         }
 
-        public Cursor MyCursor { get; set; }
+        public Cursor? MyCursor { get; set; }
         public string ConnectionId { get; set; }
         public bool Controller { get; set; }
         public bool Connected { get; set; }
-        public RegisteredClient RegistrationTicket { get; set; }
+        public RegisteredClient? RegistrationTicket { get; set; }
         public NotificationManager NotificationManager { get; private set; }
         public IdleManager IdleManager { get; private set; }
         public int CurrentLeaderboardPosition { get; set; }

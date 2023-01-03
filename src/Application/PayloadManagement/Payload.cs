@@ -5,15 +5,13 @@
         public Payload()
         {
             Cursors = new List<object>();
+            Notification = String.Empty;
         }
 
         public List<object> Cursors { get; set; }
-
         public int CursorsInWorld { get; set; }
-
         public string Notification { get; set; }
         public long LastCommandProcessed { get; set; }
-
         public int LeaderboardPosition { get; set; }
         public int Wins { get; set; }
     }

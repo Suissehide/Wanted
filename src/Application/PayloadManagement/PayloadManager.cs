@@ -1,6 +1,4 @@
 ﻿using System.Collections.Concurrent;
-using System.Drawing;
-using System.Numerics;
 using Wanted.Application.CursorEntity;
 using Wanted.Application.LeaderboardEntity;
 using Wanted.Application.UserEntity;
@@ -12,9 +10,8 @@ namespace Wanted.Application.PayloadManagement
     {
         public const int SCREEN_BUFFER_AREA = 200; // Send X extra pixels down to the client to allow for latency between client and server
 
-        public PayloadCompressor Compressor = new PayloadCompressor();
-
-        private PayloadCache _payloadCache = new PayloadCache();
+        public PayloadCompressor Compressor = new();
+        private readonly PayloadCache _payloadCache = new();
 
         public ConcurrentDictionary<string, object[]> GetGamePayloads(ICollection<User> userList, int playerCount, Map map)
         {
@@ -30,7 +27,7 @@ namespace Wanted.Application.PayloadManagement
 
                     _payloadCache.CreateCacheFor(connectionId);
 
-                    var payload = GetInitializedPayload(playerCount, user);
+                    Payload payload = GetInitializedPayload(playerCount, user);
 
                     if (!user.IdleManager.Idle)
                     {
@@ -86,9 +83,9 @@ namespace Wanted.Application.PayloadManagement
             return new Payload()
             {
                 LeaderboardPosition = user.CurrentLeaderboardPosition,
-                Wins = user.MyCursor.StatRecorder.Wins,
+                Wins = user.MyCursor is not null ? user.MyCursor.StatRecorder.Wins : 0,
                 CursorsInWorld = playerCount,
-                Notification = user.NotificationManager.PullNotification(),
+                Notification = user.NotificationManager.PullNotification() ?? string.Empty,
             };
         }
     }

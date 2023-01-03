@@ -10,13 +10,13 @@ namespace Wanted.Application.CursorEntity
         public const int WIDTH = 75;
         public const int HEIGHT = 75;
 
-        private int _serverId = 0;
         private static int _itemCount = 0;
         private static int _cursorGUID = 0;
 
-        protected static bool _altered = true;
+        private int _serverId = 0;
+        protected bool _altered = true;
 
-        private ConcurrentQueue<Action> _enqueuedCommands;
+        private readonly ConcurrentQueue<Action> _enqueuedCommands;
         private readonly Game _game;
 
         public Cursor(Game game)
@@ -31,7 +31,7 @@ namespace Wanted.Application.CursorEntity
 
         public int Id { get; set; }
         public string? Name { get; set; }
-        public User Host { get; set; }
+        public User? Host { get; set; }
         public Vector2 Position { get; set; }
         public DateTime LastUpdated { get; set; }
         public bool Disposed { get; set; }
@@ -65,7 +65,7 @@ namespace Wanted.Application.CursorEntity
         {
             // System.Diagnostics.Debug.WriteLine("Move: ", at.X, " : ", at.Y);
 
-            Host.IdleManager.RecordActivity();
+            Host?.IdleManager.RecordActivity();
 
             _enqueuedCommands.Enqueue(() =>
             {
@@ -77,11 +77,10 @@ namespace Wanted.Application.CursorEntity
         {
             LastUpdated = DateTime.UtcNow;
 
-            Action command;
 
-            while (_enqueuedCommands.Count > 0)
+            while (!_enqueuedCommands.IsEmpty)
             {
-                if (_enqueuedCommands.TryDequeue(out command) && !this.Disposed)
+                if (_enqueuedCommands.TryDequeue(out Action? command) && !this.Disposed)
                 {
                     command();
                 }

@@ -7,7 +7,9 @@ var Wanted;
                 this._authCookieName = _authCookieName;
             }
             ServerConnectionManager.prototype.PrepareRegistration = function () {
-                var stateCookie = $.cookie(this._authCookieName), state = stateCookie ? JSON.parse((stateCookie)) : {}, registrationId = state.RegistrationId;
+                var stateCookie = $.cookie(this._authCookieName);
+                var state = stateCookie ? JSON.parse((stateCookie)) : {};
+                var registrationId = state.RegistrationId;
 
                 if (registrationId) {
                     delete state.RegistrationId;

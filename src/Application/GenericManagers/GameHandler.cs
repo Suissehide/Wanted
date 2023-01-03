@@ -14,7 +14,7 @@ namespace Wanted.Application.GenericManagers
             _cursorManager = new CursorManager(this, game);
         }
 
-        public void AddCursorToGame(Cursor cursor)
+        public void AddCursorToGame(Cursor? cursor)
         {
             if (cursor != null)
             {
@@ -23,11 +23,11 @@ namespace Wanted.Application.GenericManagers
             }
         }
 
-        public void RemoveCursorFromGame(Cursor cursor)
+        public void RemoveCursorFromGame(Cursor? cursor)
         {
-            if (cursor != null)
+            if (cursor is not null)
             {
-                _cursorManager.Remove(cursor.Host.ConnectionId);
+                _cursorManager.Remove(cursor?.Host?.ConnectionId);
                 _map.Remove(cursor);
             }
         }

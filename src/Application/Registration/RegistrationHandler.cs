@@ -11,7 +11,7 @@ namespace Wanted.Application.Registration
             return _registrationList.ContainsKey(registrationId);
         }
 
-        public RegisteredClient RemoveRegistration(string registrationId)
+        public RegisteredClient? RemoveRegistration(string registrationId)
         {
             _registrationList.TryRemove(registrationId, out var rc);
 
@@ -22,6 +22,7 @@ namespace Wanted.Application.Registration
         {
             existing.RegistrationId = Guid.NewGuid().ToString();
             _registrationList.TryAdd(existing.RegistrationId, existing);
+            System.Diagnostics.Debug.WriteLine("REGISTER: ", existing);
             return existing;
         }
     }

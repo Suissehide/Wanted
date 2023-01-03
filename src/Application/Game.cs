@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.SignalR;
-using Newtonsoft.Json;
 using Wanted.Application.Configuration;
 using Wanted.Application.CursorEntity;
 using Wanted.Application.GenericManagers;
@@ -14,18 +13,18 @@ namespace Wanted.Application
 {
     public class Game
     {
-        private PayloadManager _payloadManager;
-        private HighFrequencyTimer _gameLoop;
-        private GameTime _gameTime;
+        private readonly PayloadManager _payloadManager;
+        private readonly HighFrequencyTimer _gameLoop;
+        private readonly GameTime _gameTime;
         private readonly Map _map;
-        private readonly SemaphoreSlim _gameLock = new SemaphoreSlim(1, 1);
-        private int DRAW_AFTER;
-        private IHubContext<MainHub> _mainHub;
-        private Timer _leaderboardLoop;
+        private readonly SemaphoreSlim _gameLock = new(1, 1);
+        private readonly int DRAW_AFTER;
+        private readonly IHubContext<MainHub> _mainHub;
+        private readonly Timer _leaderboardLoop;
 
         private long _actualFPS = 0;
         private long _drawCount = 0;
-        private long _drawFPS = 0;
+        private readonly long _drawFPS = 0;
 
         public Game(IHubContext<MainHub> mainHub)
         {
@@ -38,8 +37,7 @@ namespace Wanted.Application
             });
             _mainHub = mainHub;
 
-
-            _leaderboardLoop = new Timer(UpdateLeaderboard, null, Configuration.GameConfig.LEADERBOARD_PUSH_INTERVAL, Configuration.GameConfig.LEADERBOARD_PUSH_INTERVAL);
+            _leaderboardLoop = new Timer(UpdateLeaderboard!, null, Configuration.GameConfig.LEADERBOARD_PUSH_INTERVAL, Configuration.GameConfig.LEADERBOARD_PUSH_INTERVAL);
 
             DRAW_AFTER = Configuration.GameConfig.DRAW_INTERVAL / Configuration.GameConfig.UPDATE_INTERVAL;
             _gameTime = new GameTime();
@@ -80,7 +78,7 @@ namespace Wanted.Application
             }
             catch (Exception e)
             {
-                //ErrorLog.Instance.Log(e);
+                ErrorLog.Instance.Log(e);
             }
             finally
             {
@@ -89,7 +87,6 @@ namespace Wanted.Application
 
             return id;
         }
-
 
         /// <summary>
         /// Sends down batches of data to the clients in order to update their screens
@@ -103,7 +100,8 @@ namespace Wanted.Application
             foreach (string connectionId in payloads.Keys)
             {
                 // System.Diagnostics.Debug.WriteLine(JsonConvert.SerializeObject(payloads[connectionId]));
-                await UserHandler.GetUser(connectionId).PushToClientAsync(payloads[connectionId], _mainHub);
+                var user = UserHandler.GetUser(connectionId);
+                if (user is not null) await user.PushToClientAsync(payloads[connectionId], _mainHub);
             }
         }
 
@@ -111,15 +109,15 @@ namespace Wanted.Application
         /// Retrieves the game's configuration
         /// </summary>
         /// <returns>The game's configuration</returns>
-        public object initializeClient(string connectionId, RegisteredClient rc)
+        public object? InitializeClient(string connectionId, RegisteredClient? rc)
         {
             if (!UserHandler.UserExistsAndReady(connectionId))
             {
                 _gameLock.Wait();
                 try
                 {
-                    User user = null; //UserHandler.FindUserByIdentity(rc.Identity);
-                    Cursor cursor = null;
+                    User? user = null; //UserHandler.FindUserByIdentity(rc.Identity);
+                    Cursor? cursor = null;
 
                     if (user == null)
                     {
@@ -132,8 +130,10 @@ namespace Wanted.Application
                         }
                         else
                         {
-                            cursor = new Cursor(this);
-                            cursor.Name = rc.DisplayName;
+                            cursor = new Cursor(this)
+                            {
+                                Name = rc?.DisplayName
+                            };
                             user = new User(connectionId, cursor, rc) { Controller = false };
                             UserHandler.AddUser(user);
                         }
@@ -143,7 +143,7 @@ namespace Wanted.Application
 
                     return new
                     {
-                        Configuration = Configuration,
+                        Configuration,
                         ServerFull = false,
                         CompressionContracts = new
                         {
@@ -151,8 +151,8 @@ namespace Wanted.Application
                             CursorContract = _payloadManager.Compressor.CursorCompressionContract,
                             LeaderboardEntryContract = _payloadManager.Compressor.LeaderboardEntryCompressionContract,
                         },
-                        CursorId = UserHandler.GetUserCursor(connectionId).Id,
-                        CursorName = UserHandler.GetUserCursor(connectionId).Name
+                        CursorId = UserHandler?.GetUserCursor(connectionId)?.Id,
+                        CursorName = UserHandler?.GetUserCursor(connectionId)?.Name
                     };
                 }
                 catch

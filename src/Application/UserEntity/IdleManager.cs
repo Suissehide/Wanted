@@ -7,14 +7,14 @@ namespace Wanted.Application.UserEntity
         private static readonly TimeSpan IDLE_AFTER = TimeSpan.FromSeconds(120); // Go idle after X seconds with no communication to the server
         private static readonly TimeSpan DISCONNECT_AFTER = TimeSpan.FromMinutes(15); // Disconnect after X hours of being idle
 
-        public event Action<Cursor> OnIdle;
-        public event Action<User> OnIdleTimeout;
-        public event Action<Cursor> OnComeBack;
+        public event Action<Cursor>? OnIdle;
+        public event Action<User>? OnIdleTimeout;
+        public event Action<Cursor>? OnComeBack;
 
         private DateTime _lastActive;
         private DateTime? _idleAt;
-        private NotificationManager _notificationManager;
-        private Cursor _me;
+        private readonly NotificationManager _notificationManager;
+        private readonly Cursor _me;
 
         public IdleManager(Cursor me, NotificationManager notificationManager)
         {
@@ -38,15 +38,12 @@ namespace Wanted.Application.UserEntity
                 _idleAt = now;
                 Idle = true;
 
-                if (_me.Host.Connected)
+                if (_me.Host?.Connected == true)
                 {
                     _notificationManager.Notify("You are now AFK! You will not see any new cursor on screen.");
                 }
 
-                if (OnIdle != null)
-                {
-                    OnIdle(_me);
-                }
+                OnIdle?.Invoke(_me);
             }
         }
 
@@ -56,15 +53,12 @@ namespace Wanted.Application.UserEntity
             {
                 Idle = false;
 
-                if (_me.Host.Connected)
+                if (_me.Host?.Connected == true)
                 {
                     _notificationManager.Notify("You are back!");
                 }
 
-                if (OnComeBack != null)
-                {
-                    OnComeBack(_me);
-                }
+                OnComeBack?.Invoke(_me);
             }
         }
 
@@ -88,10 +82,7 @@ namespace Wanted.Application.UserEntity
                 if (_idleAt.HasValue && now - _idleAt >= DISCONNECT_AFTER)
                 {
                     _idleAt = null;
-                    if (OnIdleTimeout != null)
-                    {
-                        OnIdleTimeout(_me.Host);
-                    }
+                    if (_me.Host is not null) OnIdleTimeout?.Invoke(_me.Host);
                 }
                 else
                 {

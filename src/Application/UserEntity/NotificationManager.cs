@@ -2,7 +2,7 @@
 {
     public class NotificationManager
     {
-        private string _notification;
+        private string? _notification;
         private bool _hasNotification;
 
         public NotificationManager()
@@ -21,19 +21,16 @@
             return _hasNotification;
         }
 
-        public string PullNotification()
+        public string? PullNotification()
         {
             if (HasNotification())
             {
-                string temp = _notification;
+                string? temp = _notification;
                 _notification = null;
                 _hasNotification = false;
                 return temp;
             }
-            else
-            {
-                return null;
-            }
+            return null;
         }
     }
 }

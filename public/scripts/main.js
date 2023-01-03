@@ -1,11 +1,13 @@
 var Wanted;
 $(function () {
-    const connection = new signalR.HubConnectionBuilder()
+    var connection = new signalR
+        .HubConnectionBuilder()
         .configureLogging(signalR.LogLevel.Debug)
-        .withUrl("http://localhost:5008/hub", {
+        .withUrl("https://localhost:44302/hub", {
             skipNegotiation: true,
             transport: signalR.HttpTransportType.WebSockets
-        }).build();
+        })
+        .build();
 
     var gameCanvas = $("#game"),
         popUpHolder = $("#popUpHolder"),

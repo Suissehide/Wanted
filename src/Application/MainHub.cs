@@ -27,11 +27,12 @@ namespace Wanted.Hubs
             return _game.ConnectionManager.OnDisconnectedAsync(Context.ConnectionId);
         }
 
-        public void readyForPayloads()
+        public void ReadyForPayloads()
         {
             try
             {
-                _game.UserHandler.GetUser(Context.ConnectionId).ReadyForPayloads = true;
+                var user = _game.UserHandler.GetUser(Context.ConnectionId);
+                if (user is not null) user.ReadyForPayloads = true;
             }
             catch (Exception e)
             {
@@ -39,20 +40,19 @@ namespace Wanted.Hubs
             }
         }
 
-        public object initializeClient(string registrationId)
+        public object? InitializeClient(string registrationId)
         {
             if (_game.RegistrationHandler.RegistrationExists(registrationId))
             {
-                return _game.initializeClient(Context.ConnectionId, _game.RegistrationHandler.RemoveRegistration(registrationId));
+                return _game.InitializeClient(Context.ConnectionId, _game.RegistrationHandler.RemoveRegistration(registrationId));
             }
-
             return null;
         }
 
         /// <summary>
         /// Registers the movement on a client. Fires when the client move mouse.
         /// </summary>
-        public async Task registerMove(bool isMoving, Vector2 at, bool pingBack)
+        public async Task RegisterMove(bool isMoving, Vector2 at, bool pingBack)
         {
             if (_game.UserHandler.UserExistsAndReady(Context.ConnectionId))
             {
@@ -63,8 +63,8 @@ namespace Wanted.Hubs
                         await Clients.Client(Context.ConnectionId).SendAsync("pingBack");
                     }
 
-                    Cursor cursor = _game.UserHandler.GetUserCursor(Context.ConnectionId);
-                    cursor.RegisterMove(isMoving, at);
+                    Cursor? cursor = _game.UserHandler.GetUserCursor(Context.ConnectionId);
+                    cursor?.RegisterMove(isMoving, at);
                 }
                 catch (Exception e)
                 {
@@ -76,14 +76,14 @@ namespace Wanted.Hubs
         /// <summary>
         /// Called when a player click
         /// </summary>
-        public double click()
+        public double Click()
         {
             try
             {
                 if (_game.UserHandler.UserExistsAndReady(Context.ConnectionId))
                 {
 
-                    Cursor cursor = _game.UserHandler.GetUserCursor(Context.ConnectionId);
+                    Cursor? cursor = _game.UserHandler.GetUserCursor(Context.ConnectionId);
 
                     /*
                     if (cursor.Controllable.Value)
@@ -108,13 +108,13 @@ namespace Wanted.Hubs
         /// <summary>
         /// Called when a cursor starts firing a stream of bullet at the maximum possible rate
         /// </summary>
-        public void startClick()
+        public void StartClick()
         {
             if (_game.UserHandler.UserExistsAndReady(Context.ConnectionId))
             {
                 try
                 {
-                    Cursor cursor = _game.UserHandler.GetUserCursor(Context.ConnectionId);
+                    Cursor? cursor = _game.UserHandler.GetUserCursor(Context.ConnectionId);
 
                     /*
                     if (cursor.Controllable.Value)
@@ -133,13 +133,13 @@ namespace Wanted.Hubs
         /// <summary>
         /// Called when a cursor stops firing a stream of bullet
         /// </summary>
-        public double stopClick()
+        public double StopClick()
         {
             if (_game.UserHandler.UserExistsAndReady(Context.ConnectionId))
             {
                 try
                 {
-                    Cursor cursor = _game.UserHandler.GetUserCursor(Context.ConnectionId);
+                    Cursor? cursor = _game.UserHandler.GetUserCursor(Context.ConnectionId);
 
                     //cursor.WeaponController.AutoFire = false;
                     //return cursor.WeaponController.Energy;
@@ -153,13 +153,14 @@ namespace Wanted.Hubs
             return 0;
         }
 
-        public async Task readyForLeaderboardPayloads()
+        public async Task ReadyForLeaderboardPayloads()
         {
             try
             {
                 if (_game.UserHandler.UserExistsAndReady(Context.ConnectionId))
                 {
-                    _game.UserHandler.GetUser(Context.ConnectionId).IdleManager.RecordActivity();
+                    var user = _game.UserHandler.GetUser(Context.ConnectionId);
+                    if (user is not null) user.IdleManager.RecordActivity();
                     await _game.Leaderboard.RequestLeaderboardAsync(Context.ConnectionId);
                 }
             }
@@ -169,13 +170,14 @@ namespace Wanted.Hubs
             }
         }
 
-        public async Task stopLeaderboardPayloads()
+        public async Task StopLeaderboardPayloads()
         {
             try
             {
                 if (_game.UserHandler.UserExistsAndReady(Context.ConnectionId))
                 {
-                    _game.UserHandler.GetUser(Context.ConnectionId).IdleManager.RecordActivity();
+                    var user = _game.UserHandler.GetUser(Context.ConnectionId);
+                    if (user is not null) user.IdleManager.RecordActivity();
                     await _game.Leaderboard.StopRequestingLeaderboardAsync(Context.ConnectionId);
                 }
             }
@@ -185,14 +187,14 @@ namespace Wanted.Hubs
             }
         }
 
-        public async Task sendMessage(string message)
+        public async Task SendMessage(string message)
         {
             try
             {
                 if (_game.UserHandler.UserExistsAndReady(Context.ConnectionId))
                 {
-                    Cursor cursor = _game.UserHandler.GetUserCursor(Context.ConnectionId);
-                    var from = cursor.Name;
+                    Cursor? cursor = _game.UserHandler.GetUserCursor(Context.ConnectionId);
+                    var from = cursor?.Name;
 
                     //TODO: send a message to #wanter using the jabbr c# client later
                     await Clients.AllExcept(new List<string> { Context.ConnectionId }).SendAsync("chatMessage", from, message, 0 /* standard message */);

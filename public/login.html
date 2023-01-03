@@ -30,15 +30,15 @@
         </div>
     </div>
 
-    <script src="./scripts/vendor/jquery-3.6.0.min.js"></script>
-    <script src="./scripts/vendor/jquery.cookie.js"></script>
+    <script src="./build/scripts/vendor/jquery-3.6.0.min.js"></script>
+    <script src="./build/scripts/vendor/jquery.cookie.js"></script>
 
     <script type="text/javascript">
         $("#GuestLogin").click(function () {
             var stateCookie = {
                 DisplayName: "",
                 Identity: "Guest",
-                RegistrationID: ""
+                RegistrationId: ""
             };
             $.cookie('wanted.state', JSON.stringify(stateCookie), { path: '/', expires: 30 });
             window.location.assign("/");

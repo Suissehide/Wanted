@@ -6,13 +6,15 @@ namespace Wanted.Application.PayloadManagement
 {
     public class PayloadCompressor
     {
-        public PayloadCompressionContract PayloadCompressionContract = new PayloadCompressionContract();
-        public CursorCompressionContract CursorCompressionContract = new CursorCompressionContract();
-        public LeaderboardEntryCompressionContract LeaderboardEntryCompressionContract = new LeaderboardEntryCompressionContract();
+        public PayloadCompressionContract PayloadCompressionContract = new();
+        public CursorCompressionContract CursorCompressionContract = new();
+        public LeaderboardEntryCompressionContract LeaderboardEntryCompressionContract = new();
 
-        public object[] Compress(Cursor cursor)
+        public object?[] Compress(Cursor? cursor)
         {
-            object[] result = new object[6];
+            object?[] result = new object?[6];
+
+            if (cursor is null) return result;
 
             result[CursorCompressionContract.PositionX] = Math.Round(cursor.Position.X, 2);
             result[CursorCompressionContract.PositionY] = Math.Round(cursor.Position.Y, 2);
@@ -37,9 +39,9 @@ namespace Wanted.Application.PayloadManagement
             return result;
         }
 
-        public object[] Compress(LeaderboardEntry leaderboardEntry)
+        public object?[] Compress(LeaderboardEntry leaderboardEntry)
         {
-            object[] result = new object[3];
+            object?[] result = new object?[3];
 
             result[LeaderboardEntryCompressionContract.Name] = leaderboardEntry.Name;
             result[LeaderboardEntryCompressionContract.Id] = leaderboardEntry.Id;

@@ -31,9 +31,10 @@ namespace Wanted.Application.Utilities
             return _allObjects.Contains(obj);
         }
 
-        public void Remove(Cursor obj)
+        public void Remove(Cursor? obj)
         {
-            _allObjects.Remove(obj);
+            if (obj is not null)
+                _allObjects.Remove(obj);
 
         }
 
