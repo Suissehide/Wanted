@@ -41,6 +41,13 @@ namespace Wanted.Boostrap
             services.AddSingleton<Game>();
             services.AddAuthentication().AddCookie();
             services.AddDataProtection();
+
+            services.Configure<CookiePolicyOptions>(options =>
+            {
+                // This lambda determines whether user consent for non-essential cookies is needed for a given request.
+                options.CheckConsentNeeded = context => true;
+                options.MinimumSameSitePolicy = SameSiteMode.Lax;
+            });
         }
 
         public void Configure(IApplicationBuilder app)
@@ -60,7 +67,7 @@ namespace Wanted.Boostrap
             app.UseRouting();
             app.UseAuthentication();
 
-            app.Use((context, next) =>
+            app.Use(async (context, next) =>
             {
                 System.Diagnostics.Debug.WriteLine("MIDDLEWARE");
                 var state = context.Request.Cookies["wanted.state"];
@@ -109,7 +116,7 @@ namespace Wanted.Boostrap
                     SetState(rc, context, provider);
                 }
 
-                return next();
+                await next();
             });
 
             app.UseEndpoints(endpoints =>
@@ -128,11 +135,10 @@ namespace Wanted.Boostrap
 
             context.Response.Cookies.Append("wanted.state", state, new CookieOptions
             {
-                HttpOnly = true,
-                IsEssential = true,
+                Path = "/",
+                HttpOnly = false,
                 Secure = false,
-                SameSite = SameSiteMode.Strict,
-                Domain = "localhost",
+                IsEssential = true,
                 Expires = DateTime.Now.AddDays(30)
             });
         }

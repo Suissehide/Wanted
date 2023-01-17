@@ -3,7 +3,7 @@ $(function () {
     var connection = new signalR
         .HubConnectionBuilder()
         .configureLogging(signalR.LogLevel.Debug)
-        .withUrl("https://localhost:44302/hub", {
+        .withUrl("http://localhost:5008/hub", {
             skipNegotiation: true,
             transport: signalR.HttpTransportType.WebSockets
         })
